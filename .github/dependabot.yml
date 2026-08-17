@@ -1,0 +1,31 @@
+version: 2
+
+updates:
+  # npm 의존성. astro 본체와 @astrojs/* 통합 패키지는 서로 버전이 맞물려 있어서
+  # 따로 올리면 깨진다. groups로 묶어 PR 하나에 함께 올라오게 한다.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'chore(deps)'
+    groups:
+      astro:
+        patterns:
+          - 'astro'
+          - '@astrojs/*'
+      markdown:
+        patterns:
+          - 'remark-*'
+          - 'rehype-*'
+          - 'katex'
+
+  # 워크플로우가 쓰는 액션(actions/checkout 등)도 버전이 낡으면 경고가 뜬다.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: 'chore(ci)'

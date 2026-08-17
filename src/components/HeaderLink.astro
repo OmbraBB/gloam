@@ -1,15 +1,17 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
+import { withBase } from '../utils/url';
 
 type Props = HTMLAttributes<'a'>;
 
+// href는 base 없는 경로('/blog')로 받아서 비교하고, 출력할 때만 base를 붙인다.
 const { href, class: className, ...props } = Astro.props;
 const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '');
 const subpath = pathname.match(/[^\/]+/g);
 const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
 ---
 
-<a href={href} class:list={[className, { active: isActive }]} {...props}>
+<a href={withBase(String(href))} class:list={[className, { active: isActive }]} {...props}>
 	<slot />
 </a>
 <style>
