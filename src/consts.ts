@@ -3,4 +3,4 @@
 
 export const SITE_TITLE = 'gloam';
 export const SITE_DESCRIPTION =
-	'Database internals, storage engines, and data pipelines — 하나씩 뜯어보는 기록.';
+	'데이터베이스와 데이터 파이프라인의 내부 동작을 파고든 기록. PostgreSQL, ClickHouse, 스토리지 엔진, 실행 계획.';

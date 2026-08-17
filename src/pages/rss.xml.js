@@ -8,7 +8,8 @@ export async function GET(context) {
 	return rss({
 		title: SITE_TITLE,
 		description: SITE_DESCRIPTION,
-		site: context.site,
+		// base가 있는 프로젝트 페이지에서는 채널 링크도 base를 포함해야 한다.
+		site: new URL(import.meta.env.BASE_URL, context.site),
 		items: posts.map((post) => ({
 			...post.data,
 			link: withBase(`/blog/${post.id}/`),
