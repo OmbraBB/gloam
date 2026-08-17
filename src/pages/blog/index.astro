@@ -15,7 +15,7 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<style>
@@ -92,6 +92,11 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
 		<Header />
 		<main>
 			<section>
+				{
+					posts.length === 0 && (
+						<p style="color: rgb(var(--gray))">아직 발행한 글이 없습니다.</p>
+					)
+				}
 				<ul>
 					{
 						posts.map((post) => (
