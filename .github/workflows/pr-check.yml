@@ -37,7 +37,7 @@ jobs:
       # GitHub Pages는 PR별 미리보기 URL을 제공하지 않는다.
       # 대신 빌드 결과물을 아티팩트로 올려 PR 페이지에서 내려받아 확인할 수 있게 한다.
       - name: Upload built site
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: site-preview
           path: dist/
