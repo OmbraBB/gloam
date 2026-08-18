@@ -12,17 +12,19 @@
 */
 
 :root {
-	/* ── 다크(기본): 검보라 야경 ── */
-	--bg: #100e1c;
-	--bg-elevated: #171430;
-	--surface: #1d1935;
-	--text: #e7e3f5; /* 순백은 눈부시다. 살짝 낮춘 회백 */
-	--text-strong: #f4f1ff;
-	--text-muted: #9b93bd;
-	--border: #2b2548;
-	--accent: #b3a4ff; /* 별빛 라벤더 */
-	--accent-hover: #d3caff;
-	--code-bg: #1a1730;
+	/* ── 다크(기본): 푸른빛이 감도는 남보라 야경 ── */
+	--bg: #0d0e1c;
+	--bg-elevated: #15172e;
+	--surface: #1a1d38;
+	--text: #e3e5f7; /* 순백은 눈부시다. 살짝 낮춘 회백 */
+	--text-strong: #f1f2ff;
+	--text-muted: #949ac0;
+	--border: #272b4d;
+	/* 색상각 235°. 250°(연보라)보다 푸른 쪽이라 깊게 가라앉는다.
+	   배경 대비 6.83:1 로 WCAG AA 충족 — 더 어두우면 링크가 안 읽힌다. */
+	--accent: #8b93f0;
+	--accent-hover: #aab1ff;
+	--code-bg: #171a33;
 
 	--gray-gradient: var(--bg-elevated), var(--bg);
 	--box-shadow:
@@ -30,37 +32,38 @@
 		0 16px 32px rgba(0, 0, 0, 25%);
 
 	/* ── 템플릿 호환 매핑 (rgb() 안에서 쓰이므로 트리플렛 유지) ── */
-	--black: 244, 241, 255; /* 가장 밝은 글자 = 제목 */
-	--gray-dark: 231, 227, 245; /* 본문 */
-	--gray: 155, 147, 189; /* 보조 텍스트 */
-	--gray-light: 43, 37, 72; /* 경계선·코드 배경 */
-	--accent-dark: #8f7fe8;
+	--black: 241, 242, 255; /* 가장 밝은 글자 = 제목 */
+	--gray-dark: 227, 229, 247; /* 본문 */
+	--gray: 148, 154, 192; /* 보조 텍스트 */
+	--gray-light: 39, 43, 77; /* 경계선·코드 배경 */
+	--accent-dark: #6f78d8;
 }
 
 @media (prefers-color-scheme: light) {
 	:root {
-		/* ── 라이트: 여명 직전의 옅은 보랏빛 ── */
-		--bg: #faf8fd;
-		--bg-elevated: #f2eef8;
+		/* ── 라이트: 여명 직전의 옅은 남보랏빛 ── */
+		--bg: #f8f9fd;
+		--bg-elevated: #eef0f8;
 		--surface: #ffffff;
-		--text: #241f38;
-		--text-strong: #14101f;
-		--text-muted: #6b6389;
-		--border: #e5dff1;
-		--accent: #5b46c4;
-		--accent-hover: #3d2b9a;
-		--code-bg: #f2eef8;
+		--text: #1f2138;
+		--text-strong: #10111f;
+		--text-muted: #636889;
+		--border: #dfe2f1;
+		/* 다크의 235°와 같은 계열을 깊게. 대비 8.39:1 (AAA) */
+		--accent: #3f3d9e;
+		--accent-hover: #2b2a78;
+		--code-bg: #eef0f8;
 
 		--gray-gradient: var(--bg-elevated), var(--bg);
 		--box-shadow:
-			0 2px 6px rgba(91, 70, 196, 10%), 0 8px 24px rgba(91, 70, 196, 8%),
-			0 16px 32px rgba(91, 70, 196, 6%);
+			0 2px 6px rgba(63, 61, 158, 10%), 0 8px 24px rgba(63, 61, 158, 8%),
+			0 16px 32px rgba(63, 61, 158, 6%);
 
-		--black: 20, 16, 31;
-		--gray-dark: 36, 31, 56;
-		--gray: 107, 99, 137;
-		--gray-light: 229, 223, 241;
-		--accent-dark: #3d2b9a;
+		--black: 16, 17, 31;
+		--gray-dark: 31, 33, 56;
+		--gray: 99, 104, 137;
+		--gray-light: 223, 226, 241;
+		--accent-dark: #2b2a78;
 	}
 }
 
@@ -95,11 +98,11 @@ body {
 		pointer-events: none;
 		background-image:
 			radial-gradient(1px 1px at 12% 18%, rgba(255, 255, 255, 0.5), transparent),
-			radial-gradient(1px 1px at 68% 12%, rgba(214, 205, 255, 0.45), transparent),
+			radial-gradient(1px 1px at 68% 12%, rgba(198, 208, 255, 0.45), transparent),
 			radial-gradient(1px 1px at 34% 46%, rgba(255, 255, 255, 0.3), transparent),
-			radial-gradient(1px 1px at 84% 62%, rgba(214, 205, 255, 0.35), transparent),
+			radial-gradient(1px 1px at 84% 62%, rgba(198, 208, 255, 0.35), transparent),
 			radial-gradient(1px 1px at 22% 78%, rgba(255, 255, 255, 0.28), transparent),
-			radial-gradient(1px 1px at 57% 88%, rgba(214, 205, 255, 0.3), transparent),
+			radial-gradient(1px 1px at 57% 88%, rgba(198, 208, 255, 0.3), transparent),
 			radial-gradient(1px 1px at 92% 32%, rgba(255, 255, 255, 0.24), transparent);
 	}
 }
