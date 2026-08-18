@@ -48,7 +48,7 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
 					</ul>
 				)
 			}
-			<p><a href={withBase('/blog')}>글 목록 전체 보기 →</a></p>
+			<p class="more"><a href={withBase('/blog')}>글 목록 전체 보기 →</a></p>
 		</main>
 		<Footer />
 	</body>
@@ -76,14 +76,35 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
 		padding: 0.75em 0;
 		border-bottom: 1px solid var(--border);
 	}
+	/*
+	  글 제목은 콘텐츠다. <a>라는 이유로 강조색을 칠하면 목록 전체가 시끄러워진다.
+	  본문색으로 두고, 마우스를 올렸을 때만 링크임을 드러낸다.
+	  강조색(보라)은 문장 안에 섞인 인라인 참조에만 남긴다.
+	*/
 	.post-list a {
-		font-weight: 700;
+		font-weight: 800;
+		letter-spacing: -0.02em;
+		color: var(--text-strong);
 		text-decoration: none;
 	}
+	.post-list a:hover {
+		color: var(--accent);
+	}
 	.post-list .date {
-		color: var(--text-muted);
 		font-size: 0.85em;
 		white-space: nowrap;
-		font-variant-numeric: tabular-nums;
+	}
+
+	/* 목록으로 넘어가는 안내. 인라인 참조가 아니라 이동 장치라 조용해야 한다. */
+	.more {
+		margin-top: 1.6em;
+	}
+	.more a {
+		color: var(--text-muted);
+		font-size: 0.92em;
+		text-decoration: none;
+	}
+	.more a:hover {
+		color: var(--accent);
 	}
 </style>
