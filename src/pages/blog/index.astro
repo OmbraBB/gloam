@@ -112,8 +112,10 @@ const years = [...byYear.keys()].sort((a, b) => b - a);
 		color: var(--text-strong);
 		line-height: 1.45;
 	}
-	.row:hover .title {
-		color: var(--accent);
+	/* 호버는 한 번에 하나뿐이라 초록의 밝기가 그대로 장점이 된다 */
+	.row:hover .title,
+	.row:hover .date {
+		color: var(--accent-meta);
 	}
 	.date {
 		font-size: 0.85em;

@@ -67,13 +67,17 @@ const {
 			.draft-badge::before {
 				content: '● ';
 			}
+			/* 글 페이지에서는 한 번만 나오므로 초록을 살린다 */
 			.meta {
 				display: flex;
 				flex-wrap: wrap;
 				align-items: center;
 				gap: 0.5em 1em;
-				color: var(--text-muted);
+				color: var(--accent-meta);
 				font-size: 0.88em;
+			}
+			.meta :global(.tag) {
+				color: var(--accent-meta);
 			}
 			.last-updated-on {
 				font-style: italic;
