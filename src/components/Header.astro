@@ -6,7 +6,7 @@ import HeaderLink from './HeaderLink.astro';
 
 <header>
 	<nav>
-		<h2><a href={withBase('/')}>{SITE_TITLE}</a></h2>
+		<h2><a class="aurora-text" href={withBase('/')}>{SITE_TITLE}</a></h2>
 		<div class="internal-links">
 			<HeaderLink href="/">Home</HeaderLink>
 			<HeaderLink href="/blog">Blog</HeaderLink>
@@ -89,41 +89,28 @@ import HeaderLink from './HeaderLink.astro';
 		font-size: 1em;
 	}
 
-	/*
-	  로고만 픽셀 폰트. 라틴 전용이라 본문에는 쓸 수 없다.
-	  글자에 오로라를 흘린다. background-clip이 안 먹는 브라우저에서는
-	  color 값이 그대로 보이므로 글자가 사라지지 않는다.
-	*/
+	/* 로고만 픽셀 폰트. 라틴 전용이라 본문에는 쓸 수 없다. 색은 .aurora-text가 맡는다. */
 	h2 a,
 	h2 a.active {
 		text-decoration: none;
 		font-family: var(--font-pixel), monospace;
 		font-size: 1.7em;
 		letter-spacing: 0.06em;
-		color: var(--text-strong);
-		background: linear-gradient(
-			100deg,
-			var(--accent-meta) 0%,
-			var(--text-strong) 45%,
-			var(--accent) 100%
-		);
-		-webkit-background-clip: text;
-		background-clip: text;
-		-webkit-text-fill-color: transparent;
 		transition: filter 0.15s ease;
 	}
 	/* 글자색이 투명이라 color로는 호버를 못 준다. 밝기로 준다. */
 	h2 a:hover {
-		filter: brightness(1.3);
+		filter: brightness(1.25);
 	}
 	nav {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 	}
+	/* 헤더는 면적이 좁아 번짐 부담이 적다. 본문보다 밝게 유지한다. */
 	nav a {
 		padding: 1em 0.5em;
-		color: var(--text);
+		color: var(--text-nav);
 		border-bottom: 3px solid transparent;
 		text-decoration: none;
 	}

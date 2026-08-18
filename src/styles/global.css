@@ -27,8 +27,14 @@
 	--bg: #0e1226;
 	--bg-elevated: #151a33;
 	--surface: #1a2040;
-	--text: #e2e7f5; /* 순백은 눈부시다. 살짝 낮춘 회백. 대비 14.99:1 */
-	--text-strong: #f2f5ff;
+	/*
+	  어두운 배경 위의 밝은 글씨는 난시가 있으면 빛이 번져(halation) 읽기 힘들다.
+	  대비를 15:1 → 10:1 대로 낮췄다. AAA 기준(7:1)은 여전히 여유 있게 넘는다.
+	  헤더만 --text-nav로 밝기를 유지한다 — 면적이 좁아 번짐이 문제되지 않는다.
+	*/
+	--text: #b7c0d8; /* 10.19:1 */
+	--text-strong: #d6dcee; /* 13.53:1 */
+	--text-nav: #e9edfa; /* 헤더 전용 */
 	--text-muted: #8e98bd; /* 6.51:1 */
 	--border: #28325c;
 	--accent: #b09cff; /* 보라. 7.98:1 */
@@ -42,8 +48,8 @@
 		0 16px 32px rgba(0, 0, 0, 25%);
 
 	/* ── 템플릿 호환 매핑 (rgb() 안에서 쓰이므로 트리플렛 유지) ── */
-	--black: 242, 245, 255; /* 가장 밝은 글자 = 제목 */
-	--gray-dark: 226, 231, 245; /* 본문 */
+	--black: 214, 220, 238; /* 가장 밝은 글자 = 제목 */
+	--gray-dark: 183, 192, 216; /* 본문 */
 	--gray: 142, 152, 189; /* 보조 텍스트 */
 	--gray-light: 40, 50, 92; /* 경계선·코드 배경 */
 	--accent-dark: #8f78e8;
@@ -57,6 +63,7 @@
 		--surface: #ffffff;
 		--text: #1b1f33;
 		--text-strong: #0d1020;
+		--text-nav: #0d1020;
 		--text-muted: #5d6480;
 		--border: #dde1ee;
 		--accent: #5b3fc4; /* 보라. 6.7:1 */
@@ -314,6 +321,28 @@ hr {
 	border: none;
 	border-top: 1px solid var(--border);
 	margin: 2.5em 0;
+}
+
+/*
+  오로라 글자. 로고와 페이지 대제목처럼 페이지당 한 번 나오는 자리에만 쓴다.
+  가운데를 순백으로 두면 흰 덩어리가 커져서 눈이 부시므로, 흰색을 아주 얇게 깔고
+  양끝의 초록·보라가 대부분을 차지하게 했다.
+  background-clip 미지원 브라우저에서는 color 값이 그대로 보여 글자가 사라지지 않는다.
+*/
+.aurora-text {
+	color: var(--text-strong);
+	background: linear-gradient(
+		100deg,
+		var(--accent-meta) 0%,
+		var(--accent-meta) 16%,
+		color-mix(in srgb, var(--text-strong) 62%, var(--accent-meta)) 42%,
+		color-mix(in srgb, var(--text-strong) 62%, var(--accent)) 58%,
+		var(--accent) 86%,
+		var(--accent) 100%
+	);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
 }
 
 /* 글에 붙는 태그 */

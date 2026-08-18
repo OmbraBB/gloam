@@ -30,7 +30,7 @@ const years = [...byYear.keys()].sort((a, b) => b - a);
 	<body>
 		<Header />
 		<main>
-			<h1>글 목록</h1>
+			<h1 class="aurora-text">글 목록</h1>
 			{
 				posts.length === 0 ? (
 					<p class="empty">아직 발행한 글이 없습니다.</p>
@@ -112,10 +112,10 @@ const years = [...byYear.keys()].sort((a, b) => b - a);
 		color: var(--text-strong);
 		line-height: 1.45;
 	}
-	/* 호버는 한 번에 하나뿐이라 초록의 밝기가 그대로 장점이 된다 */
+	/* 호버는 보라로 통일. 사이트 전체에서 보라 = 상호작용이라는 규칙을 지킨다. */
 	.row:hover .title,
 	.row:hover .date {
-		color: var(--accent-meta);
+		color: var(--accent);
 	}
 	.date {
 		font-size: 0.85em;
