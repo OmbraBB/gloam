@@ -46,9 +46,17 @@ import HeaderLink from './HeaderLink.astro';
 		font-size: 1em;
 	}
 
+	/* 로고만 픽셀 폰트. 라틴 전용이라 본문에는 쓸 수 없다. */
 	h2 a,
 	h2 a.active {
 		text-decoration: none;
+		font-family: var(--font-pixel), monospace;
+		font-size: 0.78em;
+		letter-spacing: 0.02em;
+		color: var(--text-strong);
+	}
+	h2 a:hover {
+		color: var(--accent);
 	}
 	nav {
 		display: flex;

@@ -28,6 +28,17 @@ export default defineConfig({
 	},
 	fonts: [
 		{
+			// 로고와 픽셀 UI 요소 전용. 본문에는 쓰지 않는다(가독성·한글 글리프 없음).
+			// 빌드 시점에 내려받아 자체 호스팅되므로 런타임 외부 요청은 없다.
+			provider: fontProviders.google(),
+			name: 'Press Start 2P',
+			cssVariable: '--font-pixel',
+			fallbacks: ['monospace'],
+			weights: [400],
+			styles: ['normal'],
+			subsets: ['latin'],
+		},
+		{
 			provider: fontProviders.local(),
 			name: 'Atkinson',
 			cssVariable: '--font-atkinson',

@@ -77,13 +77,20 @@ const years = [...byYear.keys()].sort((a, b) => b - a);
 		margin-top: 2.5em;
 	}
 	.year {
-		font-size: 0.95em;
+		font-family: var(--font-pixel), monospace;
+		font-size: 0.85em;
 		color: var(--text-muted);
-		font-variant-numeric: tabular-nums;
-		letter-spacing: 0.08em;
-		margin: 0 0 0.6em 0;
-		padding-bottom: 0.4em;
-		border-bottom: 1px solid var(--border);
+		letter-spacing: 0.02em;
+		margin: 0 0 0.8em 0;
+		padding-bottom: 0.6em;
+		background-image: repeating-linear-gradient(
+			to right,
+			var(--border) 0 4px,
+			transparent 4px 8px
+		);
+		background-repeat: no-repeat;
+		background-position: bottom left;
+		background-size: 100% 3px;
 	}
 	.posts {
 		list-style: none;
