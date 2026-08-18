@@ -92,6 +92,9 @@ body {
   픽셀 별. 2px 정사각형 하나를 box-shadow로 복제해서 흩뿌린다.
   radial-gradient는 가장자리가 번지지만 box-shadow는 딱 떨어져서 픽셀로 보인다.
   이미지가 아니라 용량은 0.
+
+  분위기형으로 전환하며: 개수를 22 → 13으로 줄이고 밝기를 절반 이하로 낮췄다.
+  반짝임(twinkle)은 제거 — 깜빡이는 순간 아기자기해진다.
 */
 @media (prefers-color-scheme: dark) {
 	body::before {
@@ -105,32 +108,33 @@ body {
 		pointer-events: none;
 		background: transparent;
 		box-shadow:
-			7vw 11vh 0 0 rgba(255, 255, 255, 0.55), 23vw 6vh 0 0 rgba(198, 208, 255, 0.4),
-			41vw 17vh 0 0 rgba(255, 255, 255, 0.3), 58vw 8vh 0 0 rgba(198, 208, 255, 0.45),
-			73vw 21vh 0 0 rgba(255, 255, 255, 0.35), 89vw 13vh 0 0 rgba(198, 208, 255, 0.3),
-			14vw 34vh 0 0 rgba(255, 255, 255, 0.28), 33vw 41vh 0 0 rgba(198, 208, 255, 0.38),
-			51vw 29vh 0 0 rgba(255, 255, 255, 0.45), 67vw 44vh 0 0 rgba(198, 208, 255, 0.26),
-			84vw 37vh 0 0 rgba(255, 255, 255, 0.32), 4vw 52vh 0 0 rgba(198, 208, 255, 0.34),
-			27vw 61vh 0 0 rgba(255, 255, 255, 0.4), 46vw 56vh 0 0 rgba(198, 208, 255, 0.24),
-			62vw 68vh 0 0 rgba(255, 255, 255, 0.3), 79vw 59vh 0 0 rgba(198, 208, 255, 0.42),
-			94vw 73vh 0 0 rgba(255, 255, 255, 0.26), 11vw 79vh 0 0 rgba(198, 208, 255, 0.36),
-			36vw 87vh 0 0 rgba(255, 255, 255, 0.33), 55vw 92vh 0 0 rgba(198, 208, 255, 0.28),
-			71vw 83vh 0 0 rgba(255, 255, 255, 0.38), 88vw 95vh 0 0 rgba(198, 208, 255, 0.25);
+			7vw 11vh 0 0 rgba(255, 255, 255, 0.22), 41vw 17vh 0 0 rgba(198, 208, 255, 0.14),
+			73vw 21vh 0 0 rgba(255, 255, 255, 0.16), 23vw 6vh 0 0 rgba(198, 208, 255, 0.12),
+			89vw 13vh 0 0 rgba(255, 255, 255, 0.13), 33vw 41vh 0 0 rgba(198, 208, 255, 0.17),
+			62vw 34vh 0 0 rgba(255, 255, 255, 0.12), 84vw 47vh 0 0 rgba(198, 208, 255, 0.15),
+			14vw 58vh 0 0 rgba(255, 255, 255, 0.11), 47vw 66vh 0 0 rgba(198, 208, 255, 0.13),
+			78vw 72vh 0 0 rgba(255, 255, 255, 0.15), 29vw 84vh 0 0 rgba(198, 208, 255, 0.11),
+			66vw 91vh 0 0 rgba(255, 255, 255, 0.12);
 	}
-}
 
-/* 애니메이션을 끄기로 한 사용자에게는 깜빡임을 주지 않는다 */
-@media (prefers-color-scheme: dark) and (prefers-reduced-motion: no-preference) {
-	body::before {
-		animation: twinkle 6s ease-in-out infinite alternate;
-	}
-}
-@keyframes twinkle {
-	from {
-		opacity: 0.75;
-	}
-	to {
-		opacity: 1;
+	/*
+	  디더링. 분위기형 픽셀아트가 그라데이션을 표현하던 방식으로,
+	  2px 체커보드를 아주 옅게 깔고 아래로 갈수록 사라지게 마스킹한다.
+	  매끈한 그라데이션에 거친 입자가 섞여 화면이 "찍혀 있는" 느낌이 된다.
+	*/
+	body::after {
+		content: '';
+		position: fixed;
+		inset: 0;
+		z-index: -1;
+		pointer-events: none;
+		background-image: repeating-conic-gradient(
+			rgba(255, 255, 255, 0.028) 0% 25%,
+			transparent 0% 50%
+		);
+		background-size: 4px 4px;
+		-webkit-mask-image: linear-gradient(to bottom, #000 0, transparent 620px);
+		mask-image: linear-gradient(to bottom, #000 0, transparent 620px);
 	}
 }
 
@@ -245,8 +249,6 @@ pre {
 	padding: 1.2em;
 	border-radius: 2px;
 	border: 1px solid var(--border);
-	/* 둥근 그림자 대신 딱 떨어지는 오프셋 — 8비트 UI의 입체감 */
-	box-shadow: 4px 4px 0 var(--border);
 	overflow-x: auto;
 	font-size: 0.85em;
 	line-height: 1.65;
@@ -304,17 +306,17 @@ hr {
 	margin: 0;
 	padding: 0;
 }
-/* 알약 대신 각진 상자 + 딱 떨어지는 그림자 */
+/* 알약 대신 각진 상자. 그림자는 뺐다 — 스티커처럼 보여서 장난감스러워진다. */
 .tag {
 	font-family: var(--font-pixel), monospace;
-	font-size: 0.6em;
-	line-height: 1.9;
-	padding: 0.25em 0.6em;
+	font-size: 0.95em;
+	line-height: 1.35;
+	letter-spacing: 0.02em;
+	padding: 0.05em 0.55em;
 	border: 1px solid var(--border);
 	border-radius: 0;
-	box-shadow: 2px 2px 0 var(--border);
 	color: var(--text-muted);
-	background: var(--bg-elevated);
+	background: transparent;
 	white-space: nowrap;
 }
 

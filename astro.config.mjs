@@ -30,8 +30,12 @@ export default defineConfig({
 		{
 			// 로고와 픽셀 UI 요소 전용. 본문에는 쓰지 않는다(가독성·한글 글리프 없음).
 			// 빌드 시점에 내려받아 자체 호스팅되므로 런타임 외부 요청은 없다.
+			//
+			// Press Start 2P(아케이드)에서 VT323(CRT 터미널)으로 교체.
+			// 같은 비트맵 계열이지만 오락실 대신 오래된 콘솔 화면을 연상시켜
+			// "귀엽다"가 아니라 "서늘하다" 쪽으로 읽힌다.
 			provider: fontProviders.google(),
-			name: 'Press Start 2P',
+			name: 'VT323',
 			cssVariable: '--font-pixel',
 			fallbacks: ['monospace'],
 			weights: [400],
