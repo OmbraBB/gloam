@@ -16,9 +16,13 @@
 	  ── 다크(기본): 오로라 ──
 	  남색 하늘이 무대, 초록과 보라가 배우.
 	  색을 균등하게 쓰면 촌스러워지므로 역할을 나눈다:
-	    --accent      (초록) = 누를 수 있는 것 — 링크, 활성 탭
-	    --accent-meta (보라) = 글에 대한 정보 — 날짜, 태그, 초안 표시
+	    --accent      (보라) = 누를 수 있는 것 — 링크, 활성 탭
+	    --accent-meta (초록) = 글에 대한 정보 — 날짜, 태그, 초안 표시
 	  읽는 사람이 색만 보고 종류를 구분하게 된다.
+
+	  링크가 보라인 이유: 보라(7.98:1)는 본문(14.99:1)보다 확실히 물러나
+	  문장 흐름을 안 끊는다. 초록은 12:1이라 본문만큼 튀어서 링크로는 시끄럽다.
+	  대신 초록은 날짜·태그처럼 드물게 스치는 자리에서 가장 예쁘다.
 	*/
 	--bg: #0e1226;
 	--bg-elevated: #151a33;
@@ -27,9 +31,9 @@
 	--text-strong: #f2f5ff;
 	--text-muted: #8e98bd; /* 6.51:1 */
 	--border: #28325c;
-	--accent: #6ee7a8; /* 12.05:1 */
-	--accent-hover: #9df3c6;
-	--accent-meta: #b09cff; /* 7.98:1 */
+	--accent: #b09cff; /* 보라. 7.98:1 */
+	--accent-hover: #cbbcff; /* 호버에서만 밝아진다 */
+	--accent-meta: #6ee7a8; /* 초록. 12.05:1 — 짧게 스치는 자리라 밝아도 된다 */
 	--code-bg: #151a33;
 
 	--gray-gradient: var(--bg-elevated), var(--bg);
@@ -42,7 +46,7 @@
 	--gray-dark: 226, 231, 245; /* 본문 */
 	--gray: 142, 152, 189; /* 보조 텍스트 */
 	--gray-light: 40, 50, 92; /* 경계선·코드 배경 */
-	--accent-dark: #4bc98a;
+	--accent-dark: #8f78e8;
 }
 
 @media (prefers-color-scheme: light) {
@@ -55,9 +59,10 @@
 		--text-strong: #0d1020;
 		--text-muted: #5d6480;
 		--border: #dde1ee;
-		--accent: #0d6b48; /* 초록. 6.16:1 — 밝은 초록은 흰 배경에서 안 읽힌다 */
-		--accent-hover: #094f35;
-		--accent-meta: #5b3fc4; /* 보라. 6.7:1 */
+		--accent: #5b3fc4; /* 보라. 6.7:1 */
+		--accent-hover: #46309c;
+		/* 밝은 초록은 흰 배경에서 못 읽으므로 라이트에서는 깊은 초록으로 */
+		--accent-meta: #0d6b48; /* 초록. 6.16:1 */
 		--code-bg: #eef1f8;
 
 		--gray-gradient: var(--bg-elevated), var(--bg);
@@ -69,7 +74,7 @@
 		--gray-dark: 27, 31, 51;
 		--gray: 93, 100, 128;
 		--gray-light: 221, 225, 238;
-		--accent-dark: #094f35;
+		--accent-dark: #46309c;
 	}
 }
 
@@ -190,12 +195,22 @@ b {
 	font-weight: 700;
 	color: var(--text-strong);
 }
+/*
+  색만으로 링크를 표시하지 않는다. 밑줄이 링크임을 알려주므로
+  색은 뒤로 물러나도 된다 — 색약 사용자에게도 이쪽이 안전하다.
+  밑줄은 옅게 깔고, 마우스를 올렸을 때만 또렷해진다.
+*/
 a {
 	color: var(--accent);
 	text-underline-offset: 0.2em;
+	text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+	transition:
+		color 0.12s ease,
+		text-decoration-color 0.12s ease;
 }
 a:hover {
 	color: var(--accent-hover);
+	text-decoration-color: currentColor;
 }
 p {
 	margin-bottom: 1.2em;
