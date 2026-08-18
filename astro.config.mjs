@@ -21,12 +21,28 @@ export default defineConfig({
 			rehypePlugins: [rehypeKatex],
 		}),
 		shikiConfig: {
-			// 다크 테마에서도 읽히도록 라이트/다크 두 벌을 함께 내보낸다.
-			themes: { light: 'github-light', dark: 'github-dark' },
+			// 사이트 팔레트(남색 배경 + 초록·보라)와 맞물리는 테마로.
+			// night-owl은 남색 바탕에 초록·보라 계열 구문색을 써서 그대로 이어진다.
+			themes: { light: 'night-owl-light', dark: 'night-owl' },
 			wrap: true,
 		},
 	},
 	fonts: [
+		{
+			// 로고와 픽셀 UI 요소 전용. 본문에는 쓰지 않는다(가독성·한글 글리프 없음).
+			// 빌드 시점에 내려받아 자체 호스팅되므로 런타임 외부 요청은 없다.
+			//
+			// Press Start 2P(아케이드)에서 VT323(CRT 터미널)으로 교체.
+			// 같은 비트맵 계열이지만 오락실 대신 오래된 콘솔 화면을 연상시켜
+			// "귀엽다"가 아니라 "서늘하다" 쪽으로 읽힌다.
+			provider: fontProviders.google(),
+			name: 'VT323',
+			cssVariable: '--font-pixel',
+			fallbacks: ['monospace'],
+			weights: [400],
+			styles: ['normal'],
+			subsets: ['latin'],
+		},
 		{
 			provider: fontProviders.local(),
 			name: 'Atkinson',

@@ -6,7 +6,7 @@ import HeaderLink from './HeaderLink.astro';
 
 <header>
 	<nav>
-		<h2><a href={withBase('/')}>{SITE_TITLE}</a></h2>
+		<h2><a class="aurora-text" href={withBase('/')}>{SITE_TITLE}</a></h2>
 		<div class="internal-links">
 			<HeaderLink href="/">Home</HeaderLink>
 			<HeaderLink href="/blog">Blog</HeaderLink>
@@ -35,35 +35,107 @@ import HeaderLink from './HeaderLink.astro';
 	</nav>
 </header>
 <style>
+	/*
+	  오로라는 여기에만 건다. 헤더는 페이지당 한 번뿐이라
+	  아무리 세게 해도 반복되지 않고, 그래서 소음이 되지 않는다.
+	*/
 	header {
+		position: relative;
 		margin: 0;
 		padding: 0 1em;
-		background: white;
-		box-shadow: 0 2px 8px rgba(var(--black), 5%);
+		background: var(--bg-elevated);
+		overflow: hidden;
+	}
+	/* 헤더 뒤에 걸리는 빛 */
+	header::before {
+		content: '';
+		position: absolute;
+		inset: -120% 0 auto 0;
+		height: 260%;
+		pointer-events: none;
+		background:
+			radial-gradient(
+				60% 55% at 22% 78%,
+				color-mix(in srgb, var(--accent-meta) 22%, transparent) 0%,
+				transparent 70%
+			),
+			radial-gradient(
+				55% 50% at 72% 82%,
+				color-mix(in srgb, var(--accent) 26%, transparent) 0%,
+				transparent 70%
+			);
+		filter: blur(26px);
+	}
+	/* 초록에서 보라로 넘어가는 띠. 두 색이 만나는 지점이 오로라의 얼굴이다. */
+	header::after {
+		content: '';
+		position: absolute;
+		inset: auto 0 0 0;
+		height: 2px;
+		background: linear-gradient(
+			to right,
+			transparent 0%,
+			var(--accent-meta) 18%,
+			var(--accent) 55%,
+			color-mix(in srgb, var(--accent) 40%, transparent) 78%,
+			transparent 100%
+		);
+	}
+	nav {
+		position: relative;
 	}
 	h2 {
 		margin: 0;
 		font-size: 1em;
 	}
 
+	/* 로고만 픽셀 폰트. 라틴 전용이라 본문에는 쓸 수 없다. 색은 .aurora-text가 맡는다. */
 	h2 a,
 	h2 a.active {
 		text-decoration: none;
+		font-family: var(--font-pixel), monospace;
+		font-size: 1.7em;
+		letter-spacing: 0.06em;
+		transition: filter 0.15s ease;
+	}
+	/* 글자색이 투명이라 color로는 호버를 못 준다. 밝기로 준다. */
+	h2 a:hover {
+		filter: brightness(1.25);
 	}
 	nav {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 	}
+	/* 헤더는 면적이 좁아 번짐 부담이 적다. 본문보다 밝게 유지한다. */
 	nav a {
 		padding: 1em 0.5em;
-		color: var(--black);
-		border-bottom: 4px solid transparent;
+		color: var(--text-nav);
+		border-bottom: 3px solid transparent;
 		text-decoration: none;
 	}
+	nav a:hover {
+		color: var(--accent);
+	}
+	.social-links a {
+		color: var(--text-muted);
+	}
+	.social-links a:hover {
+		color: var(--accent);
+	}
+	/*
+	  현재 보고 있는 위치는 계속 켜져 있어야 한다.
+	  호버와 같은 보라를 쓰되, 호버는 스쳐 지나가고 이건 머무른다.
+	*/
 	nav a.active {
 		text-decoration: none;
+		color: var(--accent);
 		border-bottom-color: var(--accent);
+	}
+	/* 이미 활성인 탭에 마우스를 올렸을 때만 한 단계 더 밝게 */
+	nav a.active:hover {
+		color: var(--accent-hover);
+		border-bottom-color: var(--accent-hover);
 	}
 	.social-links,
 	.social-links a {

@@ -20,7 +20,8 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
 	<body>
 		<Header />
 		<main>
-			<h1>gloam</h1>
+			{/* 헤더 로고와 겹치므로 화면에는 숨기고, 문서 구조상 h1만 남긴다 */}
+			<h1 class="sr-only">gloam</h1>
 			<p class="lede">
 				데이터베이스와 데이터 파이프라인의 내부 동작을 파고든 기록입니다. 장애를 추적한 과정, 실행
 				계획이 이상하게 풀린 이유, 스토리지 엔진이 실제로 디스크에 무엇을 쓰는지 같은 것들을
@@ -48,7 +49,7 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
 					</ul>
 				)
 			}
-			<p><a href={withBase('/blog')}>글 목록 전체 보기 →</a></p>
+			<p class="more"><a href={withBase('/blog')}>글 목록 전체 보기 →</a></p>
 		</main>
 		<Footer />
 	</body>
@@ -57,10 +58,11 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
 <style>
 	.lede {
 		font-size: 1.15em;
-		line-height: 1.7;
+		line-height: 1.85;
+		max-width: 34em;
 	}
 	.empty {
-		color: rgb(var(--gray));
+		color: var(--text-muted);
 	}
 	.post-list {
 		list-style: none;
@@ -72,13 +74,39 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
 		flex-wrap: wrap;
 		align-items: baseline;
 		justify-content: space-between;
-		gap: 0.5em;
-		padding: 0.6em 0;
-		border-bottom: 1px solid rgb(var(--gray-light));
+		gap: 0.3em 1em;
+		padding: 0.75em 0;
+		border-bottom: 1px solid var(--border);
+	}
+	/*
+	  글 제목은 콘텐츠다. <a>라는 이유로 강조색을 칠하면 목록 전체가 시끄러워진다.
+	  본문색으로 두고, 마우스를 올렸을 때만 링크임을 드러낸다.
+	  강조색(보라)은 문장 안에 섞인 인라인 참조에만 남긴다.
+	*/
+	.post-list a {
+		font-weight: 800;
+		letter-spacing: -0.02em;
+		color: var(--text-strong);
+		text-decoration: none;
+	}
+	.post-list a:hover {
+		color: var(--accent);
 	}
 	.post-list .date {
-		color: rgb(var(--gray));
-		font-size: 0.9em;
+		font-size: 0.85em;
 		white-space: nowrap;
+	}
+
+	/* 목록으로 넘어가는 안내. 인라인 참조가 아니라 이동 장치라 조용해야 한다. */
+	.more {
+		margin-top: 1.6em;
+	}
+	.more a {
+		color: var(--text-muted);
+		font-size: 0.92em;
+		text-decoration: none;
+	}
+	.more a:hover {
+		color: var(--accent);
 	}
 </style>

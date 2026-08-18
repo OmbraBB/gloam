@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
@@ -12,110 +11,130 @@ import { withBase } from '../../utils/url';
 const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+
+// 연도별로 묶어 시간 흐름이 보이게 한다.
+const byYear = new Map<number, typeof posts>();
+for (const post of posts) {
+	const year = post.data.pubDate.getFullYear();
+	if (!byYear.has(year)) byYear.set(year, []);
+	byYear.get(year)!.push(post);
+}
+const years = [...byYear.keys()].sort((a, b) => b - a);
 ---
 
 <!doctype html>
 <html lang="ko">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			main {
-				width: 960px;
-			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
-			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-			}
-		</style>
+		<BaseHead title={`글 목록 · ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
 	</head>
 	<body>
 		<Header />
 		<main>
-			<section>
-				{
-					posts.length === 0 && (
-						<p style="color: rgb(var(--gray))">아직 발행한 글이 없습니다.</p>
-					)
-				}
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={withBase(`/blog/${post.id}/`)}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</section>
+			<h1>글 목록</h1>
+			{
+				posts.length === 0 ? (
+					<p class="empty">아직 발행한 글이 없습니다.</p>
+				) : (
+					years.map((year) => (
+						<section class="year-group">
+							<h2 class="year">{year}</h2>
+							<ul class="posts">
+								{byYear.get(year)!.map((post) => (
+									<li>
+										<a class="row" href={withBase(`/blog/${post.id}/`)}>
+											<span class="title">{post.data.title}</span>
+											<span class="date">
+												<FormattedDate date={post.data.pubDate} />
+											</span>
+										</a>
+										{post.data.description && (
+											<p class="desc">{post.data.description}</p>
+										)}
+										{post.data.tags.length > 0 && (
+											<ul class="tags">
+												{post.data.tags.map((tag) => (
+													<li class="tag">{tag}</li>
+												))}
+											</ul>
+										)}
+									</li>
+								))}
+							</ul>
+						</section>
+					))
+				)
+			}
 		</main>
 		<Footer />
 	</body>
 </html>
+
+<style>
+	.empty {
+		color: var(--text-muted);
+	}
+	.year-group {
+		margin-top: 2.5em;
+	}
+	.year {
+		font-size: 1em;
+		font-weight: 800;
+		letter-spacing: -0.02em;
+		margin: 0 0 0.8em 0;
+		padding-bottom: 0.5em;
+		border-bottom: 1px solid var(--border);
+	}
+	.posts {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.posts > li {
+		padding: 1.1em 0;
+		border-bottom: 1px solid var(--border);
+	}
+	.posts > li:last-child {
+		border-bottom: none;
+	}
+	.row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 0.4em 1em;
+		text-decoration: none;
+		color: inherit;
+	}
+	.title {
+		font-size: 1.1em;
+		font-weight: 800;
+		letter-spacing: -0.02em;
+		color: var(--text-strong);
+		line-height: 1.45;
+	}
+	/* 호버는 보라로 통일. 사이트 전체에서 보라 = 상호작용이라는 규칙을 지킨다. */
+	.row:hover .title,
+	.row:hover .date {
+		color: var(--accent);
+	}
+	.date {
+		font-size: 0.85em;
+		white-space: nowrap;
+	}
+	.desc {
+		margin: 0.45em 0 0 0;
+		color: var(--text-muted);
+		font-size: 0.92em;
+		line-height: 1.65;
+	}
+	.tags {
+		margin-top: 0.7em;
+	}
+
+	@media (max-width: 720px) {
+		.row {
+			flex-direction: column;
+			gap: 0.25em;
+		}
+	}
+</style>

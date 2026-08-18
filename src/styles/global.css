@@ -1,124 +1,396 @@
 /*
-  The CSS in this style tag is based off of Bear Blog's default CSS.
-  https://github.com/HermanMartinus/bearblog/blob/297026a877bc2ab2b3bdfbd6b9f7961c350917dd/templates/styles/blog/default.css
-  License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
- */
+  gloam — 해 진 뒤 별이 다 나오기 전, 하늘이 가장 깊은 보라색이 되는 그 시간.
+
+  구조:
+    1) 시맨틱 변수(--bg, --text, --accent ...)가 색의 유일한 출처다.
+    2) 템플릿이 원래 쓰던 변수(--black, --gray-light ...)는 시맨틱 변수를 가리키게 매핑만 해둔다.
+       기존 컴포넌트를 건드리지 않고도 색을 한곳에서 바꿀 수 있다.
+    ⚠️ 다크가 기본이라 --gray-light 같은 이름은 실제로는 어두운 색이다. 이름 말고 역할로 읽을 것.
+
+  원본: Bear Blog default CSS (MIT)
+  https://github.com/HermanMartinus/bearblog
+*/
 
 :root {
-	--accent: #2337ff;
-	--accent-dark: #000d8a;
-	--black: 15, 18, 25;
-	--gray: 96, 115, 159;
-	--gray-light: 229, 233, 240;
-	--gray-dark: 34, 41, 57;
-	--gray-gradient: rgba(var(--gray-light), 50%), #fff;
+	/*
+	  ── 다크(기본): 오로라 ──
+	  남색 하늘이 무대, 초록과 보라가 배우.
+	  색을 균등하게 쓰면 촌스러워지므로 역할을 나눈다:
+	    --accent      (보라) = 누를 수 있는 것 — 링크, 활성 탭
+	    --accent-meta (초록) = 글에 대한 정보 — 날짜, 태그, 초안 표시
+	  읽는 사람이 색만 보고 종류를 구분하게 된다.
+
+	  링크가 보라인 이유: 보라(7.98:1)는 본문(14.99:1)보다 확실히 물러나
+	  문장 흐름을 안 끊는다. 초록은 12:1이라 본문만큼 튀어서 링크로는 시끄럽다.
+	  대신 초록은 날짜·태그처럼 드물게 스치는 자리에서 가장 예쁘다.
+	*/
+	--bg: #0e1226;
+	--bg-elevated: #151a33;
+	--surface: #1a2040;
+	/*
+	  어두운 배경 위의 밝은 글씨는 난시가 있으면 빛이 번져(halation) 읽기 힘들다.
+	  대비를 15:1 → 10:1 대로 낮췄다. AAA 기준(7:1)은 여전히 여유 있게 넘는다.
+	  헤더만 --text-nav로 밝기를 유지한다 — 면적이 좁아 번짐이 문제되지 않는다.
+	*/
+	--text: #b7c0d8; /* 10.19:1 */
+	--text-strong: #d6dcee; /* 13.53:1 */
+	--text-nav: #e9edfa; /* 헤더 전용 */
+	--text-muted: #8e98bd; /* 6.51:1 */
+	--border: #28325c;
+	--accent: #b09cff; /* 보라. 7.98:1 */
+	--accent-hover: #cbbcff; /* 호버에서만 밝아진다 */
+	--accent-meta: #6ee7a8; /* 초록. 12.05:1 — 짧게 스치는 자리라 밝아도 된다 */
+	--code-bg: #151a33;
+
+	--gray-gradient: var(--bg-elevated), var(--bg);
 	--box-shadow:
-		0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%),
-		0 16px 32px rgba(var(--gray), 33%);
+		0 2px 6px rgba(0, 0, 0, 40%), 0 8px 24px rgba(0, 0, 0, 30%),
+		0 16px 32px rgba(0, 0, 0, 25%);
+
+	/* ── 템플릿 호환 매핑 (rgb() 안에서 쓰이므로 트리플렛 유지) ── */
+	--black: 214, 220, 238; /* 가장 밝은 글자 = 제목 */
+	--gray-dark: 183, 192, 216; /* 본문 */
+	--gray: 142, 152, 189; /* 보조 텍스트 */
+	--gray-light: 40, 50, 92; /* 경계선·코드 배경 */
+	--accent-dark: #8f78e8;
 }
+
+@media (prefers-color-scheme: light) {
+	:root {
+		/* ── 라이트: 같은 역할 분담을 옅은 하늘 위에 ── */
+		--bg: #f7f8fc;
+		--bg-elevated: #eef1f8;
+		--surface: #ffffff;
+		--text: #1b1f33;
+		--text-strong: #0d1020;
+		--text-nav: #0d1020;
+		--text-muted: #5d6480;
+		--border: #dde1ee;
+		--accent: #5b3fc4; /* 보라. 6.7:1 */
+		--accent-hover: #46309c;
+		/* 밝은 초록은 흰 배경에서 못 읽으므로 라이트에서는 깊은 초록으로 */
+		--accent-meta: #0d6b48; /* 초록. 6.16:1 */
+		--code-bg: #eef1f8;
+
+		--gray-gradient: var(--bg-elevated), var(--bg);
+		--box-shadow:
+			0 2px 6px rgba(91, 63, 196, 10%), 0 8px 24px rgba(91, 63, 196, 8%),
+			0 16px 32px rgba(91, 63, 196, 6%);
+
+		--black: 13, 16, 32;
+		--gray-dark: 27, 31, 51;
+		--gray: 93, 100, 128;
+		--gray-light: 221, 225, 238;
+		--accent-dark: #46309c;
+	}
+}
+
 body {
-	font-family: var(--font-atkinson);
+	/* Atkinson은 라틴 전용이라 한글은 뒤의 스택으로 떨어진다 */
+	font-family:
+		var(--font-atkinson), 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system,
+		'Segoe UI', sans-serif;
 	margin: 0;
 	padding: 0;
 	text-align: left;
-	background: linear-gradient(var(--gray-gradient)) no-repeat;
+	background-color: var(--bg);
+	background-image: linear-gradient(var(--gray-gradient));
+	background-repeat: no-repeat;
 	background-size: 100% 600px;
-	word-wrap: break-word;
+	color: var(--text);
+	font-size: 18px;
+	line-height: 1.8;
+	/* 한글은 어절 단위로 끊어야 읽힌다. 긴 URL·코드는 아래 overflow-wrap이 처리 */
+	word-break: keep-all;
 	overflow-wrap: break-word;
-	color: rgb(var(--gray-dark));
-	font-size: 20px;
-	line-height: 1.7;
+	-webkit-font-smoothing: antialiased;
 }
+
+/*
+  픽셀 별. 2px 정사각형 하나를 box-shadow로 복제해서 흩뿌린다.
+  radial-gradient는 가장자리가 번지지만 box-shadow는 딱 떨어져서 픽셀로 보인다.
+  이미지가 아니라 용량은 0.
+
+  분위기형으로 전환하며: 개수를 22 → 13으로 줄이고 밝기를 절반 이하로 낮췄다.
+  반짝임(twinkle)은 제거 — 깜빡이는 순간 아기자기해진다.
+*/
+@media (prefers-color-scheme: dark) {
+	body::before {
+		content: '';
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 2px;
+		height: 2px;
+		z-index: -1;
+		pointer-events: none;
+		background: transparent;
+		/* 흰 별 사이에 초록·보라를 드물게 섞는다. 오로라 입자처럼 보이게. */
+		box-shadow:
+			7vw 11vh 0 0 rgba(255, 255, 255, 0.22), 41vw 17vh 0 0 rgba(176, 156, 255, 0.16),
+			73vw 21vh 0 0 rgba(255, 255, 255, 0.16), 23vw 6vh 0 0 rgba(110, 231, 168, 0.14),
+			89vw 13vh 0 0 rgba(255, 255, 255, 0.13), 33vw 41vh 0 0 rgba(176, 156, 255, 0.18),
+			62vw 34vh 0 0 rgba(255, 255, 255, 0.12), 84vw 47vh 0 0 rgba(110, 231, 168, 0.13),
+			14vw 58vh 0 0 rgba(255, 255, 255, 0.11), 47vw 66vh 0 0 rgba(176, 156, 255, 0.14),
+			78vw 72vh 0 0 rgba(255, 255, 255, 0.15), 29vw 84vh 0 0 rgba(110, 231, 168, 0.12),
+			66vw 91vh 0 0 rgba(255, 255, 255, 0.12);
+	}
+
+	/*
+	  디더링. 분위기형 픽셀아트가 그라데이션을 표현하던 방식으로,
+	  2px 체커보드를 아주 옅게 깔고 아래로 갈수록 사라지게 마스킹한다.
+	  매끈한 그라데이션에 거친 입자가 섞여 화면이 "찍혀 있는" 느낌이 된다.
+	*/
+	body::after {
+		content: '';
+		position: fixed;
+		inset: 0;
+		z-index: -1;
+		pointer-events: none;
+		background-image: repeating-conic-gradient(
+			rgba(255, 255, 255, 0.028) 0% 25%,
+			transparent 0% 50%
+		);
+		background-size: 4px 4px;
+		-webkit-mask-image: linear-gradient(to bottom, #000 0, transparent 620px);
+		mask-image: linear-gradient(to bottom, #000 0, transparent 620px);
+	}
+}
+
 main {
 	width: 720px;
 	max-width: calc(100% - 2em);
 	margin: auto;
 	padding: 3em 1em;
 }
+
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-	margin: 0 0 0.5rem 0;
-	color: rgb(var(--black));
-	line-height: 1.2;
+	margin: 0 0 0.6rem 0;
+	color: var(--text-strong);
+	line-height: 1.35;
+	letter-spacing: -0.01em;
+	font-weight: 700;
 }
+/* 원본 스케일은 한글에 과하게 커서 한 단계씩 낮췄다 */
 h1 {
-	font-size: 3.052em;
+	font-size: 2.1em;
+	font-weight: 800;
+	letter-spacing: -0.035em;
 }
 h2 {
-	font-size: 2.441em;
+	font-size: 1.65em;
+	margin-top: 1.8em;
 }
 h3 {
-	font-size: 1.953em;
+	font-size: 1.3em;
+	margin-top: 1.6em;
 }
 h4 {
-	font-size: 1.563em;
+	font-size: 1.1em;
 }
 h5 {
-	font-size: 1.25em;
+	font-size: 1em;
 }
+
 strong,
 b {
 	font-weight: 700;
+	color: var(--text-strong);
 }
+/*
+  색만으로 링크를 표시하지 않는다. 밑줄이 링크임을 알려주므로
+  색은 뒤로 물러나도 된다 — 색약 사용자에게도 이쪽이 안전하다.
+  밑줄은 옅게 깔고, 마우스를 올렸을 때만 또렷해진다.
+*/
 a {
 	color: var(--accent);
+	text-underline-offset: 0.2em;
+	text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+	transition:
+		color 0.12s ease,
+		text-decoration-color 0.12s ease;
 }
 a:hover {
-	color: var(--accent);
+	color: var(--accent-hover);
+	text-decoration-color: currentColor;
 }
 p {
-	margin-bottom: 1em;
+	margin-bottom: 1.2em;
 }
 .prose p {
-	margin-bottom: 2em;
+	margin-bottom: 1.6em;
 }
-textarea {
-	width: 100%;
-	font-size: 16px;
+.prose li {
+	margin-bottom: 0.4em;
 }
+textarea,
 input {
 	font-size: 16px;
 }
+
 table {
 	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 1.6em;
+	font-size: 0.92em;
+	/* 표는 어절 단위 유지가 오히려 넘치게 만든다 */
+	word-break: normal;
 }
+th,
+td {
+	padding: 0.5em 0.7em;
+	border: 1px solid var(--border);
+	text-align: left;
+	vertical-align: top;
+}
+th {
+	background: var(--bg-elevated);
+	color: var(--text-strong);
+	font-weight: 700;
+}
+/* 넓은 표가 본문을 밀지 않도록 가로 스크롤을 가둔다 */
+.table-wrap {
+	overflow-x: auto;
+}
+
 img {
 	max-width: 100%;
 	height: auto;
-	border-radius: 8px;
-}
-code {
-	padding: 2px 5px;
-	background-color: rgb(var(--gray-light));
 	border-radius: 2px;
 }
+/* 도트 그래픽을 넣을 때 흐려지지 않게 */
+img.pixel {
+	image-rendering: pixelated;
+}
+
+code {
+	padding: 0.15em 0.4em;
+	background-color: var(--code-bg);
+	border: 1px solid var(--border);
+	border-radius: 2px;
+	font-size: 0.88em;
+	word-break: break-all;
+}
+/* 상자로 가두지 않고 왼쪽 선만. 헤어라인 상자가 늘어나면 문서사이트처럼 보인다. */
 pre {
-	padding: 1.5em;
-	border-radius: 8px;
+	padding: 0.9em 0 0.9em 1.2em;
+	border-radius: 0;
+	border-left: 3px solid color-mix(in srgb, var(--accent-meta) 50%, transparent);
+	overflow-x: auto;
+	font-size: 0.85em;
+	line-height: 1.65;
 }
 pre > code {
 	all: unset;
+	word-break: normal;
 }
+
+/*
+  Shiki 듀얼 테마 전환.
+  themes: {light, dark} 를 쓰면 Astro는 --shiki-dark-* 변수만 내보내고
+  전환 CSS는 넣어주지 않는다. 이게 없으면 다크 모드에서도 라이트 코드 테마가 나온다.
+*/
+@media (prefers-color-scheme: dark) {
+	.astro-code,
+	.astro-code span {
+		color: var(--shiki-dark) !important;
+		background-color: var(--shiki-dark-bg) !important;
+		font-style: var(--shiki-dark-font-style) !important;
+		font-weight: var(--shiki-dark-font-weight) !important;
+		text-decoration: var(--shiki-dark-text-decoration) !important;
+	}
+}
+
 blockquote {
-	border-left: 4px solid var(--accent);
-	padding: 0 0 0 20px;
-	margin: 0;
-	font-size: 1.333em;
+	border-left: 3px solid var(--accent-meta);
+	padding: 0.2em 0 0.2em 1.2em;
+	margin: 0 0 1.6em 0;
+	font-size: 1em;
+	color: var(--text-muted);
 }
+blockquote p:last-child {
+	margin-bottom: 0;
+}
+
 hr {
 	border: none;
-	border-top: 1px solid rgb(var(--gray-light));
+	border-top: 1px solid var(--border);
+	margin: 2.5em 0;
 }
+
+/*
+  오로라 글자 = 브랜드 마크. 로고에만 쓴다.
+  흰색을 완전히 뺐다. 브랜드 색이 아닌 색이 섞이면 마크가 흐려지고,
+  흰 덩어리 자체가 눈부심의 원인이기도 하다. 초록과 보라, 그 사이 혼합색만 쓴다.
+  background-clip 미지원 브라우저에서는 color 값이 그대로 보여 글자가 사라지지 않는다.
+*/
+.aurora-text {
+	color: var(--accent);
+	background: linear-gradient(
+		100deg,
+		var(--accent-meta) 0%,
+		color-mix(in srgb, var(--accent-meta) 55%, var(--accent)) 45%,
+		var(--accent) 92%,
+		var(--accent) 100%
+	);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+/* 글에 붙는 태그 */
+.tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4em;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+/*
+  테두리도 배경도 없다. 색만으로 태그임을 알린다.
+  상자를 씌우면 회색 헤어라인이 늘어나 문서사이트처럼 보인다.
+*/
+/*
+  기본은 조용하게. 목록에서는 날짜·태그가 행마다 반복되는데,
+  거기에 밝은 초록(12:1)을 칠하면 세로로 늘어선 초록 점이 소음이 된다.
+  초록은 글 페이지처럼 한 번만 나오는 자리에서 살린다(BlogPost.astro).
+*/
+.tag {
+	font-size: 0.85em;
+	line-height: 1.6;
+	color: var(--text-muted);
+	white-space: nowrap;
+}
+.tag::before {
+	content: '#';
+	opacity: 0.55;
+}
+
+/* 날짜·연도처럼 시간을 가리키는 값 */
+.date,
+.year {
+	color: var(--text-muted);
+	font-variant-numeric: tabular-nums;
+}
+
 @media (max-width: 720px) {
 	body {
-		font-size: 18px;
+		font-size: 17px;
 	}
 	main {
-		padding: 1em;
+		padding: 1.5em 1em;
+	}
+	h1 {
+		font-size: 1.85em;
+	}
+	h2 {
+		font-size: 1.4em;
 	}
 }
 
