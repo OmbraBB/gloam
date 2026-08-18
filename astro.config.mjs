@@ -21,8 +21,9 @@ export default defineConfig({
 			rehypePlugins: [rehypeKatex],
 		}),
 		shikiConfig: {
-			// 사이트 팔레트(검보라)와 맞물리는 테마로. 라이트/다크 두 벌을 함께 내보낸다.
-			themes: { light: 'rose-pine-dawn', dark: 'rose-pine-moon' },
+			// 사이트 팔레트(남색 배경 + 초록·보라)와 맞물리는 테마로.
+			// night-owl은 남색 바탕에 초록·보라 계열 구문색을 써서 그대로 이어진다.
+			themes: { light: 'night-owl-light', dark: 'night-owl' },
 			wrap: true,
 		},
 	},

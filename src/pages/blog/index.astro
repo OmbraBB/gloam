@@ -77,21 +77,12 @@ const years = [...byYear.keys()].sort((a, b) => b - a);
 		margin-top: 2.5em;
 	}
 	.year {
-		font-family: var(--font-pixel), monospace;
-		font-size: 1.35em;
-		font-weight: 400;
-		color: var(--text-muted);
-		letter-spacing: 0.06em;
+		font-size: 1em;
+		font-weight: 800;
+		letter-spacing: -0.02em;
 		margin: 0 0 0.8em 0;
-		padding-bottom: 0.6em;
-		background-image: repeating-linear-gradient(
-			to right,
-			var(--border) 0 4px,
-			transparent 4px 8px
-		);
-		background-repeat: no-repeat;
-		background-position: bottom left;
-		background-size: 100% 3px;
+		padding-bottom: 0.5em;
+		border-bottom: 1px solid var(--border);
 	}
 	.posts {
 		list-style: none;
@@ -115,8 +106,9 @@ const years = [...byYear.keys()].sort((a, b) => b - a);
 		color: inherit;
 	}
 	.title {
-		font-size: 1.15em;
-		font-weight: 700;
+		font-size: 1.1em;
+		font-weight: 800;
+		letter-spacing: -0.02em;
 		color: var(--text-strong);
 		line-height: 1.45;
 	}
@@ -124,10 +116,8 @@ const years = [...byYear.keys()].sort((a, b) => b - a);
 		color: var(--accent);
 	}
 	.date {
-		color: var(--text-muted);
 		font-size: 0.85em;
 		white-space: nowrap;
-		font-variant-numeric: tabular-nums;
 	}
 	.desc {
 		margin: 0.45em 0 0 0;

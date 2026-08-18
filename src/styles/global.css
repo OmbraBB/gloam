@@ -12,19 +12,25 @@
 */
 
 :root {
-	/* ── 다크(기본): 푸른빛이 감도는 남보라 야경 ── */
-	--bg: #0d0e1c;
-	--bg-elevated: #15172e;
-	--surface: #1a1d38;
-	--text: #e3e5f7; /* 순백은 눈부시다. 살짝 낮춘 회백 */
-	--text-strong: #f1f2ff;
-	--text-muted: #949ac0;
-	--border: #272b4d;
-	/* 색상각 232.8°. 250°(연보라) → 235° → 여기까지 푸른 쪽으로 내려왔다.
-	   배경 대비 6.57:1 로 WCAG AA 충족 — 더 어두우면 링크가 안 읽힌다. */
-	--accent: #8390ef;
-	--accent-hover: #a6b0ff;
-	--code-bg: #171a33;
+	/*
+	  ── 다크(기본): 오로라 ──
+	  남색 하늘이 무대, 초록과 보라가 배우.
+	  색을 균등하게 쓰면 촌스러워지므로 역할을 나눈다:
+	    --accent      (초록) = 누를 수 있는 것 — 링크, 활성 탭
+	    --accent-meta (보라) = 글에 대한 정보 — 날짜, 태그, 초안 표시
+	  읽는 사람이 색만 보고 종류를 구분하게 된다.
+	*/
+	--bg: #0e1226;
+	--bg-elevated: #151a33;
+	--surface: #1a2040;
+	--text: #e2e7f5; /* 순백은 눈부시다. 살짝 낮춘 회백. 대비 14.99:1 */
+	--text-strong: #f2f5ff;
+	--text-muted: #8e98bd; /* 6.51:1 */
+	--border: #28325c;
+	--accent: #6ee7a8; /* 12.05:1 */
+	--accent-hover: #9df3c6;
+	--accent-meta: #b09cff; /* 7.98:1 */
+	--code-bg: #151a33;
 
 	--gray-gradient: var(--bg-elevated), var(--bg);
 	--box-shadow:
@@ -32,38 +38,38 @@
 		0 16px 32px rgba(0, 0, 0, 25%);
 
 	/* ── 템플릿 호환 매핑 (rgb() 안에서 쓰이므로 트리플렛 유지) ── */
-	--black: 241, 242, 255; /* 가장 밝은 글자 = 제목 */
-	--gray-dark: 227, 229, 247; /* 본문 */
-	--gray: 148, 154, 192; /* 보조 텍스트 */
-	--gray-light: 39, 43, 77; /* 경계선·코드 배경 */
-	--accent-dark: #6f78d8;
+	--black: 242, 245, 255; /* 가장 밝은 글자 = 제목 */
+	--gray-dark: 226, 231, 245; /* 본문 */
+	--gray: 142, 152, 189; /* 보조 텍스트 */
+	--gray-light: 40, 50, 92; /* 경계선·코드 배경 */
+	--accent-dark: #4bc98a;
 }
 
 @media (prefers-color-scheme: light) {
 	:root {
-		/* ── 라이트: 여명 직전의 옅은 남보랏빛 ── */
-		--bg: #f8f9fd;
-		--bg-elevated: #eef0f8;
+		/* ── 라이트: 같은 역할 분담을 옅은 하늘 위에 ── */
+		--bg: #f7f8fc;
+		--bg-elevated: #eef1f8;
 		--surface: #ffffff;
-		--text: #1f2138;
-		--text-strong: #10111f;
-		--text-muted: #636889;
-		--border: #dfe2f1;
-		/* 다크와 같은 계열을 깊게. 대비 8.76:1 (AAA) */
-		--accent: #393b9c;
-		--accent-hover: #262878;
-		--code-bg: #eef0f8;
+		--text: #1b1f33;
+		--text-strong: #0d1020;
+		--text-muted: #5d6480;
+		--border: #dde1ee;
+		--accent: #0d6b48; /* 초록. 6.16:1 — 밝은 초록은 흰 배경에서 안 읽힌다 */
+		--accent-hover: #094f35;
+		--accent-meta: #5b3fc4; /* 보라. 6.7:1 */
+		--code-bg: #eef1f8;
 
 		--gray-gradient: var(--bg-elevated), var(--bg);
 		--box-shadow:
-			0 2px 6px rgba(63, 61, 158, 10%), 0 8px 24px rgba(63, 61, 158, 8%),
-			0 16px 32px rgba(63, 61, 158, 6%);
+			0 2px 6px rgba(91, 63, 196, 10%), 0 8px 24px rgba(91, 63, 196, 8%),
+			0 16px 32px rgba(91, 63, 196, 6%);
 
-		--black: 16, 17, 31;
-		--gray-dark: 31, 33, 56;
-		--gray: 99, 104, 137;
-		--gray-light: 223, 226, 241;
-		--accent-dark: #2b2a78;
+		--black: 13, 16, 32;
+		--gray-dark: 27, 31, 51;
+		--gray: 93, 100, 128;
+		--gray-light: 221, 225, 238;
+		--accent-dark: #094f35;
 	}
 }
 
@@ -107,13 +113,14 @@ body {
 		z-index: -1;
 		pointer-events: none;
 		background: transparent;
+		/* 흰 별 사이에 초록·보라를 드물게 섞는다. 오로라 입자처럼 보이게. */
 		box-shadow:
-			7vw 11vh 0 0 rgba(255, 255, 255, 0.22), 41vw 17vh 0 0 rgba(198, 208, 255, 0.14),
-			73vw 21vh 0 0 rgba(255, 255, 255, 0.16), 23vw 6vh 0 0 rgba(198, 208, 255, 0.12),
-			89vw 13vh 0 0 rgba(255, 255, 255, 0.13), 33vw 41vh 0 0 rgba(198, 208, 255, 0.17),
-			62vw 34vh 0 0 rgba(255, 255, 255, 0.12), 84vw 47vh 0 0 rgba(198, 208, 255, 0.15),
-			14vw 58vh 0 0 rgba(255, 255, 255, 0.11), 47vw 66vh 0 0 rgba(198, 208, 255, 0.13),
-			78vw 72vh 0 0 rgba(255, 255, 255, 0.15), 29vw 84vh 0 0 rgba(198, 208, 255, 0.11),
+			7vw 11vh 0 0 rgba(255, 255, 255, 0.22), 41vw 17vh 0 0 rgba(176, 156, 255, 0.16),
+			73vw 21vh 0 0 rgba(255, 255, 255, 0.16), 23vw 6vh 0 0 rgba(110, 231, 168, 0.14),
+			89vw 13vh 0 0 rgba(255, 255, 255, 0.13), 33vw 41vh 0 0 rgba(176, 156, 255, 0.18),
+			62vw 34vh 0 0 rgba(255, 255, 255, 0.12), 84vw 47vh 0 0 rgba(110, 231, 168, 0.13),
+			14vw 58vh 0 0 rgba(255, 255, 255, 0.11), 47vw 66vh 0 0 rgba(176, 156, 255, 0.14),
+			78vw 72vh 0 0 rgba(255, 255, 255, 0.15), 29vw 84vh 0 0 rgba(110, 231, 168, 0.12),
 			66vw 91vh 0 0 rgba(255, 255, 255, 0.12);
 	}
 
@@ -159,7 +166,9 @@ h6 {
 }
 /* 원본 스케일은 한글에 과하게 커서 한 단계씩 낮췄다 */
 h1 {
-	font-size: 2.25em;
+	font-size: 2.1em;
+	font-weight: 800;
+	letter-spacing: -0.035em;
 }
 h2 {
 	font-size: 1.65em;
@@ -245,10 +254,11 @@ code {
 	font-size: 0.88em;
 	word-break: break-all;
 }
+/* 상자로 가두지 않고 왼쪽 선만. 헤어라인 상자가 늘어나면 문서사이트처럼 보인다. */
 pre {
-	padding: 1.2em;
-	border-radius: 2px;
-	border: 1px solid var(--border);
+	padding: 0.9em 0 0.9em 1.2em;
+	border-radius: 0;
+	border-left: 3px solid color-mix(in srgb, var(--accent-meta) 50%, transparent);
 	overflow-x: auto;
 	font-size: 0.85em;
 	line-height: 1.65;
@@ -275,7 +285,7 @@ pre > code {
 }
 
 blockquote {
-	border-left: 3px solid var(--accent);
+	border-left: 3px solid var(--accent-meta);
 	padding: 0.2em 0 0.2em 1.2em;
 	margin: 0 0 1.6em 0;
 	font-size: 1em;
@@ -285,16 +295,10 @@ blockquote p:last-child {
 	margin-bottom: 0;
 }
 
-/* 픽셀 구분선: 4px 칠하고 4px 비운다 */
 hr {
 	border: none;
-	height: 3px;
+	border-top: 1px solid var(--border);
 	margin: 2.5em 0;
-	background-image: repeating-linear-gradient(
-		to right,
-		var(--border) 0 4px,
-		transparent 4px 8px
-	);
 }
 
 /* 글에 붙는 태그 */
@@ -306,18 +310,26 @@ hr {
 	margin: 0;
 	padding: 0;
 }
-/* 알약 대신 각진 상자. 그림자는 뺐다 — 스티커처럼 보여서 장난감스러워진다. */
+/*
+  테두리도 배경도 없다. 색만으로 태그임을 알린다.
+  상자를 씌우면 회색 헤어라인이 늘어나 문서사이트처럼 보인다.
+*/
 .tag {
-	font-family: var(--font-pixel), monospace;
-	font-size: 0.95em;
-	line-height: 1.35;
-	letter-spacing: 0.02em;
-	padding: 0.05em 0.55em;
-	border: 1px solid var(--border);
-	border-radius: 0;
-	color: var(--text-muted);
-	background: transparent;
+	font-size: 0.85em;
+	line-height: 1.6;
+	color: var(--accent-meta);
 	white-space: nowrap;
+}
+.tag::before {
+	content: '#';
+	opacity: 0.55;
+}
+
+/* 날짜·연도처럼 시간을 가리키는 값 */
+.date,
+.year {
+	color: var(--accent-meta);
+	font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 720px) {
