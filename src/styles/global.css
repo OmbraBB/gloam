@@ -324,20 +324,18 @@ hr {
 }
 
 /*
-  오로라 글자. 로고와 페이지 대제목처럼 페이지당 한 번 나오는 자리에만 쓴다.
-  가운데를 순백으로 두면 흰 덩어리가 커져서 눈이 부시므로, 흰색을 아주 얇게 깔고
-  양끝의 초록·보라가 대부분을 차지하게 했다.
+  오로라 글자 = 브랜드 마크. 로고에만 쓴다.
+  흰색을 완전히 뺐다. 브랜드 색이 아닌 색이 섞이면 마크가 흐려지고,
+  흰 덩어리 자체가 눈부심의 원인이기도 하다. 초록과 보라, 그 사이 혼합색만 쓴다.
   background-clip 미지원 브라우저에서는 color 값이 그대로 보여 글자가 사라지지 않는다.
 */
 .aurora-text {
-	color: var(--text-strong);
+	color: var(--accent);
 	background: linear-gradient(
 		100deg,
 		var(--accent-meta) 0%,
-		var(--accent-meta) 16%,
-		color-mix(in srgb, var(--text-strong) 62%, var(--accent-meta)) 42%,
-		color-mix(in srgb, var(--text-strong) 62%, var(--accent)) 58%,
-		var(--accent) 86%,
+		color-mix(in srgb, var(--accent-meta) 55%, var(--accent)) 45%,
+		var(--accent) 92%,
 		var(--accent) 100%
 	);
 	-webkit-background-clip: text;
