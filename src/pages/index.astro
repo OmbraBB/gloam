@@ -20,7 +20,8 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
 	<body>
 		<Header />
 		<main>
-			<h1>gloam</h1>
+			{/* 헤더 로고와 겹치므로 화면에는 숨기고, 문서 구조상 h1만 남긴다 */}
+			<h1 class="sr-only">gloam</h1>
 			<p class="lede">
 				데이터베이스와 데이터 파이프라인의 내부 동작을 파고든 기록입니다. 장애를 추적한 과정, 실행
 				계획이 이상하게 풀린 이유, 스토리지 엔진이 실제로 디스크에 무엇을 쓰는지 같은 것들을
@@ -56,8 +57,9 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
 
 <style>
 	.lede {
-		font-size: 1.1em;
+		font-size: 1.15em;
 		line-height: 1.85;
+		max-width: 34em;
 	}
 	.empty {
 		color: var(--text-muted);
