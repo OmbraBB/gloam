@@ -21,8 +21,8 @@ export default defineConfig({
 			rehypePlugins: [rehypeKatex],
 		}),
 		shikiConfig: {
-			// 다크 테마에서도 읽히도록 라이트/다크 두 벌을 함께 내보낸다.
-			themes: { light: 'github-light', dark: 'github-dark' },
+			// 사이트 팔레트(검보라)와 맞물리는 테마로. 라이트/다크 두 벌을 함께 내보낸다.
+			themes: { light: 'rose-pine-dawn', dark: 'rose-pine-moon' },
 			wrap: true,
 		},
 	},
