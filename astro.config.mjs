@@ -29,41 +29,19 @@ export default defineConfig({
 	},
 	fonts: [
 		{
-			// 로고와 픽셀 UI 요소 전용. 본문에는 쓰지 않는다(가독성·한글 글리프 없음).
+			// 라틴 본문·제목용. 한글은 스택 뒤의 Pretendard/시스템 폰트로 떨어진다.
 			// 빌드 시점에 내려받아 자체 호스팅되므로 런타임 외부 요청은 없다.
 			//
-			// Press Start 2P(아케이드)에서 VT323(CRT 터미널)으로 교체.
-			// 같은 비트맵 계열이지만 오락실 대신 오래된 콘솔 화면을 연상시켜
-			// "귀엽다"가 아니라 "서늘하다" 쪽으로 읽힌다.
+			// VT323(픽셀) + Atkinson 체제에서 Inter 단일 체제로 교체.
+			// 유리 패널·그리드 배경의 계기판 무드에는 픽셀보다
+			// 타이트한 산세리프 워드마크가 맞는다.
 			provider: fontProviders.google(),
-			name: 'VT323',
-			cssVariable: '--font-pixel',
-			fallbacks: ['monospace'],
-			weights: [400],
+			name: 'Inter',
+			cssVariable: '--font-sans',
+			fallbacks: ['sans-serif'],
+			weights: [400, 700, 800, 900],
 			styles: ['normal'],
 			subsets: ['latin'],
-		},
-		{
-			provider: fontProviders.local(),
-			name: 'Atkinson',
-			cssVariable: '--font-atkinson',
-			fallbacks: ['sans-serif'],
-			options: {
-				variants: [
-					{
-						src: ['./src/assets/fonts/atkinson-regular.woff'],
-						weight: 400,
-						style: 'normal',
-						display: 'swap',
-					},
-					{
-						src: ['./src/assets/fonts/atkinson-bold.woff'],
-						weight: 700,
-						style: 'normal',
-						display: 'swap',
-					},
-				],
-			},
 		},
 	],
 });
