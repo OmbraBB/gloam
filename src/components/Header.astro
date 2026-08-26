@@ -61,12 +61,12 @@ import HeaderLink from './HeaderLink.astro';
 			),
 			radial-gradient(
 				55% 50% at 72% 82%,
-				color-mix(in srgb, var(--accent) 26%, transparent) 0%,
+				color-mix(in srgb, var(--accent-2) 24%, transparent) 0%,
 				transparent 70%
 			);
 		filter: blur(26px);
 	}
-	/* 초록에서 보라로 넘어가는 띠. 두 색이 만나는 지점이 오로라의 얼굴이다. */
+	/* 그린 → 블루 → 바이올렛으로 넘어가는 띠. 로고 그라데이션과 같은 순서다. */
 	header::after {
 		content: '';
 		position: absolute;
@@ -76,8 +76,8 @@ import HeaderLink from './HeaderLink.astro';
 			to right,
 			transparent 0%,
 			var(--accent-meta) 18%,
-			var(--accent) 55%,
-			color-mix(in srgb, var(--accent) 40%, transparent) 78%,
+			var(--accent) 52%,
+			color-mix(in srgb, var(--accent-2) 65%, transparent) 82%,
 			transparent 100%
 		);
 	}
@@ -89,13 +89,14 @@ import HeaderLink from './HeaderLink.astro';
 		font-size: 1em;
 	}
 
-	/* 로고만 픽셀 폰트. 라틴 전용이라 본문에는 쓸 수 없다. 색은 .aurora-text가 맡는다. */
+	/* 로고는 본문과 같은 Inter를 최고 굵기로 바짝 조여 워드마크로 쓴다. 색은 .aurora-text가 맡는다. */
 	h2 a,
 	h2 a.active {
 		text-decoration: none;
-		font-family: var(--font-pixel), monospace;
-		font-size: 1.7em;
-		letter-spacing: 0.06em;
+		font-family: var(--font-sans), sans-serif;
+		font-size: 1.45em;
+		font-weight: 900;
+		letter-spacing: -0.045em;
 		transition: filter 0.15s ease;
 	}
 	/* 글자색이 투명이라 color로는 호버를 못 준다. 밝기로 준다. */
