@@ -53,36 +53,14 @@
 	--accent-dark: #2f86dd;
 }
 
-@media (prefers-color-scheme: light) {
-	:root {
-		/* ── 라이트: 같은 역할 분담을 안개 낀 아침 바다 위에 ── */
-		--bg: #f3f7fa;
-		--bg-deep: #e8eef4;
-		--bg-elevated: #e9f0f5;
-		--surface: #ffffff;
-		--text: #22333d;
-		--text-strong: #101d26;
-		--text-nav: #101d26;
-		--text-muted: #56707e;
-		--border: #d4dfe7;
-		--accent: #1268c3; /* 블루. 5.9:1 */
-		--accent-hover: #0d4f96;
-		/* 밝은 그린은 흰 배경에서 못 읽으므로 라이트에서는 깊은 그린으로 */
-		--accent-meta: #0b6e4f; /* 그린. 5.9:1 */
-		--accent-2: #6d4fd0; /* 바이올렛. 장식 전용 */
-		--code-bg: #e9f0f5;
-
-		--gray-gradient: var(--bg-elevated), var(--bg);
-		--box-shadow:
-			0 2px 6px rgba(18, 104, 195, 10%), 0 8px 24px rgba(18, 104, 195, 8%),
-			0 16px 32px rgba(18, 104, 195, 6%);
-
-		--black: 16, 29, 38;
-		--gray-dark: 34, 51, 61;
-		--gray: 86, 112, 126;
-		--gray-light: 212, 223, 231;
-		--accent-dark: #0d4f96;
-	}
+/*
+  라이트 모드는 없다. gloam(해질녘)이라는 이름부터가 어두운 하늘이고,
+  레퍼런스로 삼은 계기판 무드도 다크에서만 성립한다.
+  OS 설정과 무관하게 다크 팔레트 하나로 간다 — color-scheme: dark가
+  스크롤바·폼 컨트롤 같은 브라우저 기본 UI까지 어둡게 맞춘다.
+*/
+:root {
+	color-scheme: dark;
 }
 
 body {
@@ -118,23 +96,20 @@ body {
   그리드 오버레이. 옅은 1px 격자를 깔고 아래로 갈수록 사라지게 마스킹한다.
   글로우만 있으면 배경이 그냥 "어두운 화면"인데, 격자가 겹치는 순간
   좌표가 생기면서 계기판·설계도 위에 글이 놓인 느낌이 된다.
-  다크 전용 — 라이트 모드는 깨끗한 안개 배경으로 둔다.
 */
-@media (prefers-color-scheme: dark) {
-	body::before {
-		content: '';
-		position: fixed;
-		inset: 0;
-		z-index: -1;
-		pointer-events: none;
-		opacity: 0.18;
-		background-image:
-			linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-		background-size: 38px 38px;
-		-webkit-mask-image: linear-gradient(to bottom, black, transparent 70%);
-		mask-image: linear-gradient(to bottom, black, transparent 70%);
-	}
+body::before {
+	content: '';
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	opacity: 0.18;
+	background-image:
+		linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+	background-size: 38px 38px;
+	-webkit-mask-image: linear-gradient(to bottom, black, transparent 70%);
+	mask-image: linear-gradient(to bottom, black, transparent 70%);
 }
 
 main {
@@ -276,19 +251,17 @@ pre > code {
 }
 
 /*
-  Shiki 듀얼 테마 전환.
+  Shiki 다크 고정.
   themes: {light, dark} 를 쓰면 Astro는 --shiki-dark-* 변수만 내보내고
-  전환 CSS는 넣어주지 않는다. 이게 없으면 다크 모드에서도 라이트 코드 테마가 나온다.
+  전환 CSS는 넣어주지 않는다. 사이트가 다크 고정이므로 조건 없이 항상 다크 값을 쓴다.
 */
-@media (prefers-color-scheme: dark) {
-	.astro-code,
-	.astro-code span {
-		color: var(--shiki-dark) !important;
-		background-color: var(--shiki-dark-bg) !important;
-		font-style: var(--shiki-dark-font-style) !important;
-		font-weight: var(--shiki-dark-font-weight) !important;
-		text-decoration: var(--shiki-dark-text-decoration) !important;
-	}
+.astro-code,
+.astro-code span {
+	color: var(--shiki-dark) !important;
+	background-color: var(--shiki-dark-bg) !important;
+	font-style: var(--shiki-dark-font-style) !important;
+	font-weight: var(--shiki-dark-font-weight) !important;
+	text-decoration: var(--shiki-dark-text-decoration) !important;
 }
 
 blockquote {
