@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Arch Motion</title>
+  <link rel="stylesheet" href="engine/archmotion.css">
+  <script>
+    // ?theme=dark 면 OS 설정과 무관하게 다크로 고정 (블로그 임베드용)
+    if (new URLSearchParams(location.search).get('theme') === 'dark') document.documentElement.dataset.theme = 'dark';
+  </script>
+  <style>
+    .filters { display: grid; gap: 10px; margin-top: 20px; }
+    .filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+    .filter-row .label { width: 44px; font: 600 11px var(--mono); color: var(--muted); letter-spacing: 0.08em; }
+    .chip { padding: 5px 11px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--muted); font-size: 13px; }
+    .chip:hover { border-color: var(--accent); }
+    .chip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--panel)); }
+    .count { margin-top: 14px; color: var(--muted); font-size: 13px; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin-top: 10px; }
+    .card { display: block; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--text); text-decoration: none; }
+    .card:hover { border-color: var(--accent); }
+    .card[hidden] { display: none; }
+    .card h2 { margin: 8px 0 8px; font-size: 18px; }
+    .card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { padding: 2px 8px; border-radius: 6px; font: 600 11px var(--mono); letter-spacing: 0.04em; }
+    .tag.engine { color: var(--k-db); background: color-mix(in srgb, var(--k-db) 14%, transparent); }
+    .tag.cat { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">ARCH MOTION · SCENARIOS</div>
+      <h1>움직이는 구조도</h1>
+      <p>시나리오를 고르면 단계별 흐름과 노드 상세를 볼 수 있습니다.</p>
+    </header>
+
+    <div class="filters">
+      <div class="filter-row" data-filter="engine"><span class="label">엔진</span></div>
+      <div class="filter-row" data-filter="cat"><span class="label">분류</span></div>
+    </div>
+    <div class="count" id="count"></div>
+
+    <!-- data-engine·data-cat: 공백으로 여러 값 -->
+    <div class="cards">
+      <a class="card" href="viewer.html?s=pg-ha-failover" data-engine="pg" data-cat="ha">
+        <h2>PostgreSQL 페일오버 흐름</h2>
+        <p>Primary 장애 → 승격 → 경로 전환 → 재합류. 일반 패턴 샘플.</p>
+      </a>
+      <a class="card" href="viewer.html?s=pg-shared-buffers" data-engine="pg" data-cat="internals">
+        <h2>PostgreSQL shared_buffers 내부 동작</h2>
+        <p>버퍼 히트·미스, 클럭 스윕, WAL 우선 기록, bgwriter·checkpointer.</p>
+      </a>
+      <a class="card" href="viewer.html?s=ch-cluster-core" data-engine="ch" data-cat="internals ha">
+        <h2>ClickHouse 클러스터 코어</h2>
+        <p>샤드·레플리카·Keeper·Distributed·오퍼레이터. INSERT·복제·머지·조회·장애·reconcile.</p>
+      </a>
+      <a class="card" href="viewer.html?s=pg-mvcc" data-engine="pg" data-cat="internals">
+        <h2>PostgreSQL MVCC와 VACUUM</h2>
+        <p>튜플 버전 xmin/xmax, 스냅샷 가시성, HOT, xmin horizon이 VACUUM을 막는 원리.</p>
+      </a>
+      <a class="card" href="viewer.html?s=pg-sync-replication" data-engine="pg" data-cat="ha">
+        <h2>PostgreSQL 동기·비동기 복제</h2>
+        <p>synchronous_commit 단계별 대기 지점, 동기 Standby 장애, 쿼럼(ANY 1).</p>
+      </a>
+      <a class="card" href="viewer.html?s=pg-backup-pitr" data-engine="pg" data-cat="backup">
+        <h2>PostgreSQL 백업과 PITR</h2>
+        <p>full/diff 백업, WAL 아카이빙, 시점 복구, 아카이브 실패 시 위험.</p>
+      </a>
+      <a class="card" href="viewer.html?s=pg-backup-incr-diff" data-engine="pg" data-cat="backup">
+        <h2>증분 vs 차등 백업</h2>
+        <p>무엇을 담는지, 복원에 몇 개가 필요한지, 중간 백업이 깨지면 어떻게 되는지.</p>
+      </a>
+      <a class="card" href="viewer.html?s=mssql-ag-redo-queue" data-engine="mssql" data-cat="ha internals">
+        <h2>SQL Server AG redo 밀림과 페일오버</h2>
+        <p>큰 트랜잭션 → redo queue 적체, SYNCHRONIZED ≠ 적용 완료, 페일오버 후 DB 오픈 지연.</p>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const NAMES = {
+      engine: { pg: 'PostgreSQL', aurora: 'Aurora PG', ch: 'ClickHouse', mssql: 'SQL Server', kafka: 'Kafka' },
+      cat: { internals: '내부 동작', ha: '복제·HA', backup: '백업·복구', perf: '성능·부하', pipeline: '파이프라인' },
+    };
+    const cards = [...document.querySelectorAll('.card')];
+    const picked = { engine: null, cat: null };
+    const vals = (card, key) => card.dataset[key].split(' ');
+    if (document.documentElement.dataset.theme === 'dark') cards.forEach((card) => { card.href += '&theme=dark'; });
+
+    // 카드마다 엔진·분류 태그 표시
+    cards.forEach((card) => {
+      const tags = document.createElement('div');
+      tags.className = 'tags';
+      const add = (cls, text) => { const s = document.createElement('span'); s.className = 'tag ' + cls; s.textContent = text; tags.append(s); };
+      vals(card, 'engine').forEach((v) => add('engine', NAMES.engine[v]));
+      vals(card, 'cat').forEach((v) => add('cat', NAMES.cat[v]));
+      card.prepend(tags);
+    });
+
+    // 필터 칩: 엔진 × 분류 AND 조건
+    function apply() {
+      let shown = 0;
+      cards.forEach((card) => {
+        const ok = Object.keys(picked).every((k) => !picked[k] || vals(card, k).includes(picked[k]));
+        card.hidden = !ok;
+        if (ok) shown++;
+      });
+      document.getElementById('count').textContent = `${shown} / ${cards.length}개 시나리오`;
+      document.querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-pressed', String(picked[c.dataset.key] === (c.dataset.val || null))));
+    }
+    Object.keys(NAMES).forEach((key) => {
+      const row = document.querySelector(`[data-filter="${key}"]`);
+      const used = new Set(cards.flatMap((c) => vals(c, key)));
+      [['', '전체'], ...Object.entries(NAMES[key]).filter(([v]) => used.has(v))].forEach(([val, text]) => {
+        const b = document.createElement('button');
+        b.className = 'chip';
+        b.dataset.key = key;
+        b.dataset.val = val;
+        b.textContent = text;
+        b.addEventListener('click', () => { picked[key] = val || null; apply(); });
+        row.append(b);
+      });
+    });
+    apply();
+  </script>
+</body>
+</html>

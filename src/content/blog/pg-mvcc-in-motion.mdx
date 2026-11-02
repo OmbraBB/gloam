@@ -1,0 +1,140 @@
+---
+title: 'MVCC를 움직이는 그림으로 보기'
+description: 'UPDATE는 행을 덮어쓰지 않는다. 그럼 옛 버전은 언제 사라지고, 왜 어떤 날은 안 사라지나.'
+pubDate: 'Nov 01 2026'
+tags: ['postgresql', 'mvcc', 'db-internals']
+draft: false
+---
+
+import { withBase } from '../../utils/url';
+
+export const viewer = withBase('/arch-motion/viewer.html?s=pg-mvcc&theme=dark');
+
+PostgreSQL을 쓰다 보면 이런 얘기를 한 번쯤 듣는다.
+
+> "UPDATE만 하는 테이블인데 왜 자꾸 커지지?"
+> "autovacuum은 분명 돌았다는데 dead tuple이 그대로야."
+
+둘 다 MVCC를 알면 바로 풀리는 얘기다. 그런데 MVCC는 글로만 읽으면
+xmin, xmax, 스냅샷, horizon 같은 단어가 머릿속에서 따로 논다.
+그래서 행 하나가 바뀌는 과정을 단계별로 움직이는 그림으로 만들어 봤다.
+
+아래 그림에서 `다음`을 누르거나 `←` `→` 키로 단계를 넘길 수 있다.
+노드(트랜잭션, 튜플, VACUUM)를 누르면 그 단계에서 무슨 일을 하는지 상세가 뜬다.
+
+<div style="width: min(1240px, calc(100vw - 2rem)); position: relative; left: 50%; transform: translateX(-50%); margin: 2em 0 0.5em;">
+	<iframe src={viewer} title="PostgreSQL MVCC와 VACUUM 구조도" loading="lazy" style="width: 100%; height: 760px; border: 0; border-radius: 12px;"></iframe>
+</div>
+
+<p style="text-align: right; font-size: 0.9em;"><a href={viewer} target="_blank" rel="noopener">새 창에서 크게 보기 ↗</a></p>
+
+## 등장인물
+
+그림에는 트랜잭션 세 개와 `users` 테이블 한 페이지가 나온다.
+
+| 등장인물 | 하는 일 |
+|---|---|
+| 트랜잭션 A (xid 101) | id=1 행의 잔액을 100 → 70으로 UPDATE |
+| 트랜잭션 B | REPEATABLE READ로 A보다 먼저 시작해서 같은 행을 읽음 |
+| 트랜잭션 C | B보다도 먼저 시작해서 아무것도 안 하고 열려만 있음 |
+
+B를 REPEATABLE READ로 둔 건 "트랜잭션 내내 같은 스냅샷을 쓴다"는 걸 보여 주기 위해서다.
+기본값인 READ COMMITTED는 쿼리마다 스냅샷을 새로 찍는다.
+
+## 1. UPDATE는 덮어쓰지 않는다
+
+PostgreSQL의 UPDATE는 사실상 **DELETE + INSERT**다.
+
+- 원래 튜플 (0,1)은 그대로 두고, `xmax`에 101(지운 트랜잭션)만 적는다.
+- 잔액 70짜리 새 튜플 (0,3)을 만들고 `xmin`에 101(만든 트랜잭션)을 적는다.
+
+그래서 A는 자기가 만든 (0,3)을 보고, B는 아직 101이 커밋되지 않았으니 (0,1)을 본다.
+읽는 쪽이 쓰는 쪽을 기다리지 않는 이유가 이거다. 같은 행의 버전이 두 개 있으니까.
+
+직접 확인하고 싶으면 숨은 컬럼을 같이 조회하면 된다.
+
+```sql
+SELECT ctid, xmin, xmax, * FROM users WHERE id = 1;
+```
+
+## 2. COMMIT은 튜플을 건드리지 않는다
+
+A가 커밋해도 튜플은 하나도 안 바뀐다. 바뀌는 건 `pg_xact`에 "101은 커밋됨"이 적히는 것뿐이다.
+
+그런데도 커밋 이후에 시작한 트랜잭션은 잔액 70을 보고, B는 여전히 100을 본다.
+어떤 버전이 보이는지는 세 가지로 정해진다.
+
+1. 튜플의 `xmin` / `xmax`
+2. 그 xid가 커밋됐는지 (`pg_xact`)
+3. **내 스냅샷**이 그 xid를 "이미 일어난 일"로 보는지
+
+B의 스냅샷은 101보다 먼저 찍혔으니, B에게 101은 커밋됐든 말든 "아직 안 일어난 일"이다.
+
+## 3. 인덱스는 왜 안 바뀌었나 (HOT)
+
+새 튜플 (0,3)이 생겼는데 id 인덱스는 여전히 (0,1)을 가리킨다. 이게 **HOT(Heap-Only Tuple) 업데이트**다.
+
+조건은 두 가지다.
+
+- 바뀐 컬럼(잔액)이 어떤 인덱스에도 들어 있지 않다.
+- 새 버전이 **같은 페이지**에 들어갈 자리가 있다.
+
+이러면 인덱스에 새 항목을 만들지 않고, 조회는 (0,1)에서 체인을 따라 (0,3)으로 간다.
+반대로 인덱스 컬럼을 바꾸거나 페이지가 꽉 차 있으면 **모든 인덱스**에 새 항목이 생긴다.
+UPDATE가 잦은 테이블에 인덱스를 무심코 늘리면 쓰기 비용이 커지는 이유 중 하나다.
+
+## 4. VACUUM이 못 지우는 날
+
+이제 A도 B도 끝났다. (0,1)은 아무도 안 볼 것 같은데, VACUUM이 돌아도 안 지워진다.
+
+범인은 아무것도 안 하고 열려만 있는 **C**다. C의 스냅샷은 101보다 먼저 찍혔으니,
+C 입장에서 (0,1) 잔액 100은 아직 보여야 하는 버전이다.
+
+VACUUM은 "가장 오래된 스냅샷도 더 이상 볼 수 없는 버전"만 지운다.
+그 경계를 **xmin horizon**이라고 부른다. 세션 하나가 오래 열려 있으면 이 경계가 앞으로 못 가고,
+그동안 같은 DB의 모든 테이블에서 쌓인 옛 버전이 전부 "dead지만 아직 못 지움" 상태로 남는다.
+"autovacuum은 돌았는데 dead tuple이 그대로"인 상황이 대부분 이거다.
+
+horizon을 붙잡는 건 오래 열린 트랜잭션만이 아니다. 아래도 같이 본다.
+
+```sql
+-- 오래된 스냅샷을 쥔 세션
+SELECT pid, datname, state, xact_start, age(backend_xmin) AS xmin_age
+FROM pg_stat_activity
+WHERE backend_xmin IS NOT NULL
+ORDER BY age(backend_xmin) DESC
+LIMIT 5;
+
+-- 복제 슬롯 (특히 안 쓰는 논리 복제 슬롯)
+SELECT slot_name, active, xmin, catalog_xmin FROM pg_replication_slots;
+
+-- 잊힌 2PC 트랜잭션
+SELECT gid, prepared, owner FROM pg_prepared_xacts;
+```
+
+`idle in transaction` 상태로 몇 시간째 멈춘 세션이 가장 흔한 범인이다.
+Standby에서 `hot_standby_feedback = on`이면 Standby의 긴 쿼리가 Primary의 horizon을 붙잡기도 한다.
+
+## 5. 정리된 뒤에도 파일은 안 줄어든다
+
+C가 끝나면 horizon이 앞으로 당겨지고, 다음 VACUUM이 (0,1)의 데이터를 정리한다.
+여기서 오해하기 쉬운 게 두 가지다.
+
+- (0,1) 자리는 완전히 사라지지 않고 (0,3)으로 가는 **redirect**로 남는다. 인덱스가 아직 (0,1)을 가리키기 때문이다.
+- 빈 공간은 같은 페이지에서 **재사용**될 뿐, 파일 크기는 그대로다. 테이블 끝에 붙은 빈 페이지만 잘려 나간다.
+
+그래서 한 번 크게 부푼 테이블은 VACUUM만으로는 안 줄어든다.
+줄이려면 `VACUUM FULL`(테이블 잠금)이나 pg_repack 같은 재작성이 필요하다.
+
+## 정리
+
+| 질문 | 답 |
+|---|---|
+| UPDATE하면 행이 바뀌나? | 아니다. 새 버전을 만들고 옛 버전에 `xmax`를 적는다. |
+| 누가 어떤 버전을 보나? | `xmin`/`xmax` + 커밋 여부 + 내 스냅샷으로 정해진다. |
+| 인덱스도 매번 바뀌나? | 인덱스 컬럼이 안 바뀌고 같은 페이지에 자리가 있으면 안 바뀐다(HOT). |
+| VACUUM이 왜 못 지우나? | 가장 오래된 스냅샷(xmin horizon)이 아직 그 버전을 볼 수 있어서다. |
+| VACUUM하면 파일이 줄어드나? | 대부분 안 줄어든다. 공간을 재사용할 뿐이다. |
+
+다음에는 같은 방식으로 `shared_buffers` 안에서 페이지가 어떻게 들어오고 쫓겨나는지를 그려 볼 생각이다.
+다른 구조도는 상단 메뉴의 <a href={withBase('/arch-motion/?theme=dark')}>Diagrams</a>에 모아 두고 있다.
