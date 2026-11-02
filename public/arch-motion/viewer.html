@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Arch Motion</title>
+  <link rel="stylesheet" href="engine/archmotion.css">
+  <script>
+    // ?theme=dark 면 OS 설정과 무관하게 다크로 고정 (블로그 임베드용)
+    if (new URLSearchParams(location.search).get('theme') === 'dark') document.documentElement.dataset.theme = 'dark';
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">ARCH MOTION · LIVE DIAGRAM</div>
+      <h1 id="title">Arch Motion</h1>
+      <p id="summary"></p>
+      <p class="disclaimer" id="disclaimer"></p>
+    </header>
+
+    <div class="layout">
+      <section class="stage-box">
+        <svg id="stage" role="group" aria-labelledby="title"></svg>
+        <div class="progress"><div id="progress"></div></div>
+        <div class="controls">
+          <button type="button" id="prev">이전</button>
+          <button type="button" id="play">일시정지</button>
+          <button type="button" id="next">다음</button>
+          <button type="button" id="auto" aria-pressed="false">자동 넘김</button>
+          <span class="hint">← → 단계 · Space 정지 · A 자동 · Esc 닫기</span>
+        </div>
+        <div class="legend" id="legend"></div>
+      </section>
+
+      <aside>
+        <div class="step-view" id="step-view">
+          <div class="step-no" id="step-no"></div>
+          <h2 class="step-title" id="step-title"></h2>
+          <p class="step-note" id="step-note"></p>
+          <p class="step-tip">노드를 누르면 역할·세부 구성·연결 관계를 볼 수 있습니다.</p>
+          <ol class="step-list" id="step-list"></ol>
+        </div>
+        <div class="node-view" id="node-view" hidden></div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="engine/archmotion.js"></script>
+  <script>
+    // ?s=<시나리오 파일명> 으로 scenarios/<이름>.js 를 불러온다 (file:// 에서도 동작)
+    const id = new URLSearchParams(location.search).get('s') || 'pg-ha-failover';
+    if (!/^[a-z0-9-]+$/.test(id)) throw new Error('잘못된 시나리오 이름: ' + id);
+    const tag = document.createElement('script');
+    tag.src = `scenarios/${id}.js`;
+    tag.onerror = () => { document.getElementById('summary').textContent = `scenarios/${id}.js 를 찾을 수 없습니다.`; };
+    tag.onload = () => {
+      const sc = ArchMotion.current;
+      document.title = sc.title;
+      document.getElementById('title').textContent = sc.title;
+      document.getElementById('summary').textContent = sc.summary || '';
+      document.getElementById('disclaimer').textContent = sc.disclaimer || '';
+      const $ = (x) => document.getElementById(x);
+      ArchMotion.mount(sc, {
+        stage: $('stage'), progress: $('progress'), legend: $('legend'),
+        prev: $('prev'), play: $('play'), next: $('next'), auto: $('auto'),
+        stepView: $('step-view'), nodeView: $('node-view'), stepNo: $('step-no'), stepTitle: $('step-title'), stepNote: $('step-note'), stepList: $('step-list'),
+      });
+    };
+    document.body.appendChild(tag);
+  </script>
+</body>
+</html>

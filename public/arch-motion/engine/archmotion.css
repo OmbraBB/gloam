@@ -1,0 +1,299 @@
+:root {
+  --bg: #080b11;
+  --panel: #0e131c;
+  --panel-2: #151c28;
+  --line: #222b3b;
+  --text: #e6edf3;
+  --muted: #8592a6;
+  --node: #0f1520;
+  --grid: rgba(140, 160, 190, 0.13);
+  --accent: #5eead4;
+
+  /* 흐름 종류 */
+  --rw: #ff9f43;
+  --ro: #4cc9f0;
+  --repl: #c084fc;
+  --ctrl: #8796ab;
+  --fail: #ff5c6c;
+  --ok: #34d399;
+
+  /* 노드 종류 */
+  --k-app: #94a3b8;
+  --k-proxy: #fb923c;
+  --k-lb: #22d3ee;
+  --k-db: #a78bfa;
+  --k-ctrl: #2dd4bf;
+  --k-fw: #fb7185;
+  --k-queue: #facc15;
+  --k-store: #60a5fa;
+  --k-proc: #38bdf8;
+  --k-mem: #a78bfa;
+  --k-disk: #94a3b8;
+
+  --sans: -apple-system, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, "Apple SD Gothic Neo", monospace;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f6fa;
+    --panel: #ffffff;
+    --panel-2: #eef1f6;
+    --line: #dbe1ea;
+    --text: #141c2b;
+    --muted: #5b687d;
+    --node: #ffffff;
+    --grid: rgba(60, 80, 120, 0.12);
+    --accent: #0d9488;
+    --rw: #dd7410;
+    --ro: #0a8fc2;
+    --repl: #8b47e0;
+    --ctrl: #6b7a90;
+    --fail: #d92f45;
+    --ok: #0f9a68;
+    --k-app: #64748b;
+    --k-proxy: #ea7212;
+    --k-lb: #0891b2;
+    --k-db: #7c4ddb;
+    --k-ctrl: #0d9488;
+    --k-fw: #e11d48;
+    --k-queue: #ca8a04;
+    --k-store: #2563eb;
+    --k-proc: #0284c7;
+    --k-mem: #7c4ddb;
+    --k-disk: #64748b;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+}
+
+.wrap { max-width: 1400px; margin: 0 auto; padding: 24px 16px 32px; }
+
+header .eyebrow { display: flex; align-items: center; gap: 8px; font: 600 11px/1 var(--mono); letter-spacing: 0.14em; color: var(--accent); }
+header .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+header h1 { margin: 10px 0 6px; font-size: 26px; letter-spacing: -0.02em; }
+header p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+header .disclaimer { margin-top: 4px; font-size: 12px; }
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 16px;
+  margin-top: 18px;
+  align-items: start;
+}
+
+.stage-box, aside {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.stage-box { overflow: hidden; }
+
+#stage { display: block; width: 100%; height: auto; }
+
+.progress { height: 2px; background: var(--panel-2); }
+.progress > div { height: 100%; width: 0; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-top: 1px solid var(--line);
+}
+
+button { font: inherit; color: var(--text); cursor: pointer; }
+.controls button, .step-list button {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+.controls button:hover, .step-list button:hover { border-color: var(--accent); }
+.controls button#auto[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.controls .hint { margin-left: auto; color: var(--muted); font: 11px var(--mono); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 14px; padding: 0 14px 12px; font-size: 12px; color: var(--muted); }
+.legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.legend-item i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); box-shadow: 0 0 6px var(--c); }
+.kind-rw { --c: var(--rw); }
+.kind-ro { --c: var(--ro); }
+.kind-repl { --c: var(--repl); }
+.kind-ctrl { --c: var(--ctrl); }
+.kind-fail { --c: var(--fail); }
+
+/* 우측 패널 */
+aside { padding: 18px; position: sticky; top: 16px; }
+.step-view, .node-view { display: flex; flex-direction: column; gap: 12px; }
+[hidden] { display: none !important; }
+.step-no { color: var(--accent); font: 700 11px var(--mono); letter-spacing: 0.12em; }
+.step-title { margin: 0; font-size: 19px; }
+.step-note { margin: 0; font-size: 14px; line-height: 1.7; white-space: pre-line; }
+.step-tip { margin: 0; padding: 8px 10px; border: 1px dashed var(--line); border-radius: 8px; color: var(--muted); font-size: 12px; }
+.step-list { list-style: none; margin: 0; padding: 12px 0 0; border-top: 1px solid var(--line); display: grid; gap: 6px; counter-reset: s; }
+.step-list li { counter-increment: s; }
+.step-list button { width: 100%; text-align: left; color: var(--muted); }
+.step-list button::before { content: counter(s, decimal-leading-zero) "  "; font-family: var(--mono); font-size: 11px; }
+.step-list button.is-current { color: var(--text); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--panel-2)); }
+
+/* 노드 상세 카드 */
+.insp-head { display: flex; align-items: center; justify-content: space-between; }
+.kind-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 999px; font: 700 11px var(--sans); color: var(--kc); border: 1px solid color-mix(in srgb, var(--kc) 50%, transparent); background: color-mix(in srgb, var(--kc) 12%, transparent); }
+.kind-chip svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.insp-close { background: none; border: 1px solid var(--line); border-radius: 8px; width: 30px; height: 30px; color: var(--muted); }
+.insp-close:hover { color: var(--text); border-color: var(--accent); }
+.insp-title { margin: 0; font-size: 22px; letter-spacing: -0.01em; }
+.insp-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+.mono { font-family: var(--mono); }
+.state-chip { padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, transparent); }
+.state-chip.is-down { color: var(--fail); background: color-mix(in srgb, var(--fail) 14%, transparent); }
+.state-chip.is-busy { color: var(--rw); background: color-mix(in srgb, var(--rw) 14%, transparent); }
+.state-chip.is-recovering { color: var(--repl); background: color-mix(in srgb, var(--repl) 14%, transparent); }
+.insp-sec { border-top: 1px solid var(--line); padding-top: 12px; }
+.insp-sec h3 { margin: 0 0 8px; font: 700 12px var(--sans); color: var(--muted); }
+.insp-sec p { margin: 0; font-size: 14px; line-height: 1.65; }
+.insp-now { border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); background: color-mix(in srgb, var(--accent) 8%, transparent); border-radius: 10px; padding: 10px 12px; }
+.insp-now h3 { color: var(--accent); }
+.insp-dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 12px; margin: 0; font-size: 13px; }
+.insp-dl dt { color: var(--muted); }
+.insp-dl dd { margin: 0; font-family: var(--mono); font-size: 12px; line-height: 1.6; word-break: keep-all; }
+.insp-notes { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.65; display: grid; gap: 4px; }
+.insp-links { display: grid; grid-template-columns: 44px 1fr; gap: 8px; align-items: start; margin-bottom: 8px; }
+.insp-links-title { color: var(--muted); font-size: 12px; padding-top: 5px; }
+.insp-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.link-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel-2); font-size: 12px; }
+.link-chip:hover { border-color: var(--c); }
+.link-chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+.link-chip small { color: var(--muted); font-size: 10px; }
+
+/* SVG: 배경·영역 */
+.grid-dot { fill: var(--grid); }
+.group { --gc: var(--muted); }
+.group.tone-app { --gc: var(--k-app); }
+.group.tone-proxy { --gc: var(--k-proxy); }
+.group.tone-lb { --gc: var(--k-lb); }
+.group.tone-db { --gc: var(--k-db); }
+.group.tone-ctrl { --gc: var(--k-ctrl); }
+.group.tone-fw { --gc: var(--k-fw); }
+.group.tone-proc { --gc: var(--k-proc); }
+.group.tone-mem { --gc: var(--k-mem); }
+.group.tone-disk { --gc: var(--k-disk); }
+.group.tone-store { --gc: var(--k-store); }
+.group.tone-queue { --gc: var(--k-queue); }
+.group-box { fill: color-mix(in srgb, var(--gc) 4%, transparent); stroke: color-mix(in srgb, var(--gc) 55%, transparent); stroke-width: 1.2; stroke-dasharray: 6 5; }
+.group-tab { fill: var(--panel); stroke: color-mix(in srgb, var(--gc) 55%, transparent); }
+/* 한글 라벨은 고정폭 글꼴에서 자간이 벌어지므로 일반 글꼴을 쓴다 */
+.group-label { fill: var(--gc); font: 700 11px var(--sans); letter-spacing: 0.02em; }
+
+/* SVG: 노드 */
+.node { --kc: var(--k-app); cursor: pointer; outline: none; transition: opacity 0.3s; }
+.node.kind-proxy { --kc: var(--k-proxy); }
+.node.kind-lb { --kc: var(--k-lb); }
+.node.kind-db { --kc: var(--k-db); }
+.node.kind-ctrl { --kc: var(--k-ctrl); }
+.node.kind-fw { --kc: var(--k-fw); }
+.node.kind-queue { --kc: var(--k-queue); }
+.node.kind-store { --kc: var(--k-store); }
+.node.kind-proc { --kc: var(--k-proc); }
+.node.kind-mem { --kc: var(--k-mem); }
+.node.kind-disk { --kc: var(--k-disk); }
+.node-box { fill: color-mix(in srgb, var(--kc) 13%, var(--node)); stroke: color-mix(in srgb, var(--kc) 75%, transparent); stroke-width: 1.4; transition: stroke 0.35s, fill 0.35s, stroke-width 0.2s; }
+.node-halo { fill: none; stroke: var(--accent); stroke-width: 2; opacity: 0; transition: opacity 0.25s; }
+.node-icon { fill: none; stroke: var(--kc); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.node text { text-anchor: middle; transition: fill 0.35s; pointer-events: none; }
+.node-label { fill: var(--text); font: 700 14px var(--sans); }
+.node-sub { fill: var(--muted); font: 11px var(--mono); }
+.node:hover .node-box, .node:focus-visible .node-box { stroke-width: 2.2; }
+.node:focus-visible .node-halo { opacity: 0.6; }
+
+.node.is-down { --kc: var(--fail); }
+.node.is-down .node-box { stroke-dasharray: 6 4; }
+.node.is-down .node-label { fill: var(--fail); }
+.node.is-promoted .node-box { stroke: var(--ok); stroke-width: 2.4; filter: drop-shadow(0 0 8px var(--ok)); }
+.node.is-busy .node-box { stroke: var(--rw); stroke-width: 2.4; filter: drop-shadow(0 0 8px var(--rw)); }
+.node.is-recovering .node-box { stroke: var(--repl); stroke-dasharray: 6 4; }
+
+/* 노드 선택: 선택 노드·이웃만 또렷하게 */
+#stage.has-focus .node { opacity: 0.28; }
+#stage.has-focus .node.is-focus, #stage.has-focus .node.is-near { opacity: 1; }
+#stage.has-focus .node.is-focus .node-halo { opacity: 1; filter: drop-shadow(0 0 6px var(--accent)); }
+#stage.has-focus .edge { opacity: 0.12; }
+#stage.has-focus .edge.is-linked { opacity: 1; }
+#stage.has-focus .edge.is-linked .edge-line { opacity: 0.95; stroke-width: 2.4; }
+#stage.has-focus .group { opacity: 0.55; }
+#stage.has-focus .callout { opacity: 0.35; }
+.pk.is-muted, .burst.is-muted { opacity: 0.12; }
+
+/* SVG: 연결선 */
+.edge { transition: opacity 0.3s; }
+.edge-line { fill: none; stroke-width: 1.8; opacity: 0.6; transition: opacity 0.3s, stroke-width 0.2s; }
+.edge.kind-rw .edge-line { stroke: var(--rw); }
+.edge.kind-ro .edge-line { stroke: var(--ro); }
+.edge.kind-repl .edge-line { stroke: var(--repl); stroke-dasharray: 6 5; }
+.edge.kind-ctrl .edge-line { stroke: var(--ctrl); stroke-dasharray: 2 4; stroke-width: 1.4; }
+.edge.is-dim .edge-line { opacity: 0.18; }
+/* 숨길 때는 페이드가 끝난 뒤 visibility를 꺼서 반쯤 남은 선이 보이지 않게 한다 */
+.edge.is-off { opacity: 0 !important; visibility: hidden; transition: opacity 0.4s, visibility 0s 0.4s; }
+.edge-plate { fill: var(--panel); stroke: var(--line); }
+.edge-label { fill: var(--c, var(--muted)); font: 600 10px var(--mono); text-anchor: middle; letter-spacing: 0.06em; }
+
+.arrow-rw path { fill: var(--rw); }
+.arrow-ro path { fill: var(--ro); }
+.arrow-repl path { fill: var(--repl); }
+.arrow-ctrl path { fill: var(--ctrl); }
+.arrow-fail path { fill: var(--fail); }
+
+/* SVG: 버퍼 슬롯 그리드 */
+.slot-box { fill: var(--panel); stroke: var(--line); stroke-width: 1.2; transition: stroke 0.3s; }
+.slot-tag { fill: var(--text); font: 600 10px var(--mono); text-anchor: middle; }
+.slot.is-empty .slot-box { stroke-dasharray: 4 3; fill: none; }
+.slot.is-empty .slot-tag { fill: var(--muted); font-family: var(--sans); }
+.slot-sub { fill: var(--muted); font: 10px var(--sans); text-anchor: middle; }
+.uc-dot { fill: var(--line); }
+.uc-dot.on { fill: var(--accent); }
+.slot-dirty { fill: var(--rw); font: 800 9px var(--mono); text-anchor: middle; }
+.slot-pin { fill: var(--ok); font: 800 8px var(--mono); }
+.slot.is-dirty .slot-box { stroke: color-mix(in srgb, var(--rw) 70%, transparent); }
+.slot.hl-hit .slot-box { stroke: var(--ok); stroke-width: 2.2; filter: drop-shadow(0 0 6px var(--ok)); }
+.slot.hl-load .slot-box { stroke: var(--ro); stroke-width: 2.2; filter: drop-shadow(0 0 6px var(--ro)); }
+.slot.hl-write .slot-box { stroke: var(--rw); stroke-width: 2.2; filter: drop-shadow(0 0 6px var(--rw)); }
+.slot.hl-victim .slot-box { stroke: var(--fail); stroke-width: 2.2; stroke-dasharray: 5 3; }
+.slot.hl-skip .slot-box { stroke: var(--muted); stroke-dasharray: 2 3; }
+.slot.hl-dead .slot-box { stroke: var(--muted); stroke-dasharray: 3 3; fill: none; }
+.slot.hl-dead .slot-tag { fill: var(--muted); text-decoration: line-through; }
+.hand { transition: transform 0.35s ease, opacity 0.3s; pointer-events: none; }
+.hand path { fill: var(--accent); filter: drop-shadow(0 0 4px var(--accent)); }
+.node .slots text { pointer-events: none; }
+
+/* SVG: 패킷·말풍선 */
+.pk { filter: drop-shadow(0 0 5px var(--c)); fill: var(--c); transition: opacity 0.3s; }
+.pk-rw { --c: var(--rw); }
+.pk-ro { --c: var(--ro); }
+.pk-repl { --c: var(--repl); }
+.pk-ctrl { --c: var(--ctrl); }
+.pk-fail { --c: var(--fail); }
+.burst { fill: none; stroke: var(--fail); stroke-width: 2; }
+
+.callout { transition: opacity 0.3s; pointer-events: none; }
+.callout rect { fill: var(--panel); stroke: var(--line); }
+.callout text { text-anchor: middle; font: 600 12px var(--sans); fill: var(--text); }
+.callout.tone-warn rect { stroke: var(--fail); }
+.callout.tone-warn text { fill: var(--fail); }
+.callout.tone-ok rect { stroke: var(--ok); }
+.callout.tone-ok text { fill: var(--ok); }
+
+@media (max-width: 960px) {
+  .layout { grid-template-columns: 1fr; }
+  aside { position: static; }
+  .controls .hint { display: none; }
+}
